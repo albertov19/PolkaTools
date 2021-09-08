@@ -1,3 +1,8 @@
+/*
+  Simple code to get your private key from JSON file
+  USE AT YOUR OWN RISK
+*/
+
 import { base64Decode } from '@polkadot/util-crypto';
 import { decodePair } from '@polkadot/keyring/pair/decode';
 import { u8aToHex } from '@polkadot/util';
@@ -8,7 +13,7 @@ const fileName = 'file_name';
 let rawdata = JSON.parse(fs.readFileSync(fileName + '.json'));
 
 // Password that you used for the account
-const accountPassword = ' ';
+const accountPassword = 'password';
 
 // Decode the account
 const decoded = decodePair(accountPassword, base64Decode(rawdata.encoded), rawdata.encoding.type);
