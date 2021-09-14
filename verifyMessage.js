@@ -12,9 +12,10 @@ const main = async () => {
 
   const signedMessage = 'signed_message';
 
-  const message = stringToU8a('email');
+  //const message = stringToU8a('email');
+  const message = 'hex_msg';
 
-  const address = 'KusamaAddress';
+  const address = 'substrate_address';
 
   // create the message, actual signature and verify
   const { isValid } = signatureVerify(message, signedMessage, address);
