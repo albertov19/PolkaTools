@@ -19,6 +19,8 @@ Then, run script with `node`.
 
 `getBlock` gets a substrate block with a given hash
 
+`checkBlockFinality` prints the latest finalized block in the provided chain
+
 `getAccFromJSON` prints the private key of a JSON file (DO NOT SHARE YOUR PRIVATE KEY)
 
 `importEthereum` shows the Ethereum address associated to a private key
