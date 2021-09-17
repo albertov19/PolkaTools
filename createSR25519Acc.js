@@ -5,7 +5,14 @@
 */
 import * as fs from 'fs';
 import { Keyring } from '@polkadot/api';
-import { cryptoWaitReady, mnemonicGenerate } from '@polkadot/util-crypto';
+import {
+  cryptoWaitReady,
+  mnemonicGenerate,
+  base64Decode,
+  mnemonicToMiniSecret,
+} from '@polkadot/util-crypto';
+import { decodePair } from '@polkadot/keyring/pair/decode';
+import { u8aToHex } from '@polkadot/util';
 
 // Global variables
 // Account prefix of SR25519 accounts (0 - Polkadot / 2 - Kusama / 42 - Generic Substrate)
@@ -23,27 +30,38 @@ const createAccount = async () => {
   // Generate mnemonic seed
   const mnemonic = mnemonicGenerate();
 
+  // Extract private key from mnemonic
+  const privateKey = u8aToHex(mnemonicToMiniSecret(mnemonic));
+
   // Create account (keypairs or pair) from mnemonic
   const pair = keyring.createFromUri(mnemonic, { name: 'sr25519' });
 
-  return [mnemonic, pair.address];
+  // Log information
+  console.log(`Account mnemonic is: ${mnemonic}`);
+  console.log(`Account private key is: ${privateKey}`);
+  console.log(`Account address is: ${pair.address}\n`);
+
+  return [mnemonic, privateKey, pair.address];
 };
 
 const main = async () => {
   // Variables
   let accounts = {};
   let mnemonics = Array();
-  let address = Array();
+  let privateKeys = Array();
+  let addresses = Array();
 
   console.log(`🤖 - Creating ${nAccounts} accounts!`);
   // Loop for each Account
   for (let i = 0; i < nAccounts; i++) {
-    [mnemonics[i], address[i]] = await createAccount();
+    console.log(`Account ${i + 1} ---`);
+    [mnemonics[i], privateKeys[i], addresses[i]] = await createAccount();
   }
 
   // Save variables into an object for saving
   accounts.mnemonics = mnemonics;
-  accounts.address = address;
+  accounts.privateKeys = privateKeys;
+  accounts.addresses = addresses;
 
   // Save data to JSON file
   const accountsJSON = JSON.stringify(accounts);
