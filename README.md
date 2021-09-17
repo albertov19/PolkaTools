@@ -26,3 +26,5 @@ Then, run script with `node`.
 `importEthereum` shows the Ethereum address associated to a private key
 
 `verifyMessage` verifys a signed message by providing the signers public Address, the message and the signed message
+
+`createSR25519Acc` script to create a number of SR25519 with a given prefix, they are saved into a JSON file
