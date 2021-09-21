@@ -7,7 +7,7 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { typesBundle } from 'moonbeam-types-bundle';
 
 // Define the TxHash to Check Finality
-const txHash = '0xddd7892a904374965d0ee0dd0923620aab9177c48eec50184e448bd6f4d4f4fd';
+const txHash = 'tx_hash';
 
 // Define the provider
 const wsProvider = new WsProvider('wss://wss.moonriver.moonbeam.network');
