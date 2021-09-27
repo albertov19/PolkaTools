@@ -13,21 +13,24 @@ const txHash = 'tx_hash';
 const wsProvider = new WsProvider('wss://wss.moonriver.moonbeam.network');
 
 const main = async () => {
-  // Wait for provider
-  const api = await ApiPromise.create({
+  // Create the provider using Moonbeam types
+  const polkadotApi = await ApiPromise.create({
     provider: wsProvider,
     typesBundle: typesBundle,
   });
-  await api.isReady;
+  await polkadotApi.isReady;
 
   // Get the latest finalized block of the Substrate chain
-  const finalizedHeadHash = (await api.rpc.chain.getFinalizedHead()).toJSON();
+  const finalizedHeadHash = (await polkadotApi.rpc.chain.getFinalizedHead()).toJSON();
 
   // Get finalized block header to retrieve number
-  const finalizedBlockHeader = (await api.rpc.chain.getHeader(finalizedHeadHash)).toJSON();
+  const finalizedBlockHeader = (await polkadotApi.rpc.chain.getHeader(finalizedHeadHash)).toJSON();
 
   // Get the transaction receipt of the given tx hash
-  const txReceipt = (await api.rpc.eth.getTransactionReceipt(txHash)).toJSON();
+  const txReceipt = (await polkadotApi.rpc.eth.getTransactionReceipt(txHash)).toJSON();
+
+  // We can not verify if the tx is in block because polkadotApi.rpc.eth.getBlockByNumber
+  // does not return the list of tx hash
 
   // If block number of receipt is not null, compare it against finalized head
   if (txReceipt) {

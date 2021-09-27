@@ -1,11 +1,6 @@
 // Verify a signed message
-
-import { stringToU8a, u8aToHex } from '@polkadot/util';
+import { stringToU8a } from '@polkadot/util';
 import { cryptoWaitReady, signatureVerify } from '@polkadot/util-crypto';
-import { Keyring } from '@polkadot/api';
-
-const accountPrefix = 2;
-const keyring = new Keyring({ type: 'sr25519', ss58Format: accountPrefix });
 
 const main = async () => {
   await cryptoWaitReady();
