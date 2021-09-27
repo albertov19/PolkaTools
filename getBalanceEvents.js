@@ -10,7 +10,7 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 
 const main = async () => {
   // Define the provider
-  const wsProvider = new WsProvider('ws://127.0.0.1:9944');
+  const wsProvider = new WsProvider('wss://wss.moonriver.moonbeam.network');
 
   // Create the provider using Moonbeam types
   const polkadotApi = await ApiPromise.create({

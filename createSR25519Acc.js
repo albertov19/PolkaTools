@@ -11,7 +11,6 @@ import {
   base64Decode,
   mnemonicToMiniSecret,
 } from '@polkadot/util-crypto';
-import { decodePair } from '@polkadot/keyring/pair/decode';
 import { u8aToHex } from '@polkadot/util';
 
 // Global variables

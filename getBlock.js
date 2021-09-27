@@ -2,7 +2,7 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 const blockHash = 'block_hash';
-const wsendpoint = 'ws-provider';
+const wsendpoint = 'wss://wss.moonriver.moonbeam.network';
 
 // Create Provider
 const wsProvider = new WsProvider(wsendpoint);
