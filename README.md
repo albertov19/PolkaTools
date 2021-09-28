@@ -29,7 +29,9 @@ Then, run script with `node`.
 
 `getAccFromJSON` prints the private key of a JSON file (DO NOT SHARE YOUR PRIVATE KEY)
 
-`importEthereum` shows the Ethereum address associated to a private key
+`getEthAddressFromPrivKey` shows the Ethereum address associated to a private key
+
+`getEthAddressFromMnemonic` derives the Ethereum address (for a given index) from a mnemonic using the `m/44/60/0/0/0` derivation path. Also logs the associated private key
 
 `verifyMessage` verifys a signed message by providing the signers public Address, the message and the signed message
 

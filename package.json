@@ -1,9 +1,10 @@
 {
   "dependencies": {
     "@polkadot/api": "^5.8.3",
-    "@polkadot/keyring": "^7.3.1",
+    "@polkadot/keyring": "^7.4.1",
     "@polkadot/util": "^7.2.1",
     "@polkadot/util-crypto": "^7.2.1",
+    "latest": "^0.2.0",
     "moonbeam-types-bundle": "^1.2.6"
   },
   "type": "module"
