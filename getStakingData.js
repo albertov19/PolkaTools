@@ -27,6 +27,7 @@ const main = async () => {
 
   // Get details of each collator
   for (let i = 0; i < collatorList.length - 1; i++) {
+    console.log(`\n Collator: ${collatorList[i]}`);
     const collatorData = await api.query.parachainStaking.collatorState2(collatorList[i]);
     console.log(collatorData.toJSON());
   }
