@@ -5,7 +5,8 @@
     "@polkadot/util": "^7.2.1",
     "@polkadot/util-crypto": "^7.2.1",
     "latest": "^0.2.0",
-    "moonbeam-types-bundle": "^1.2.6"
+    "moonbeam-types-bundle": "^1.2.6",
+    "yargs": "^17.2.1"
   },
   "type": "module"
 }
