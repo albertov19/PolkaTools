@@ -3,7 +3,7 @@
   Taken from: https://gist.github.com/crystalin/b2ce44a208af60d62b5ecd1bad513bce
 */
 
-import { typesBundle } from 'moonbeam-types-bundle';
+import { typesBundlePre900 } from 'moonbeam-types-bundle';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 
 // This script will listen to all MOVRs transfers (Substrate & Ethereum)
@@ -15,7 +15,7 @@ const main = async () => {
   // Create the provider using Moonbeam types
   const polkadotApi = await ApiPromise.create({
     provider: wsProvider,
-    typesBundle: typesBundle,
+    typesBundle: typesBundlePre900,
   });
 
   polkadotApi.query.system.events((events) => {

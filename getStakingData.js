@@ -4,7 +4,7 @@
   Use at your own discretion
 */
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { typesBundle } from 'moonbeam-types-bundle';
+import { typesBundlePre900 } from 'moonbeam-types-bundle';
 
 // Create Provider
 const wsProvider = new WsProvider('wss://wss.moonriver.moonbeam.network');
@@ -13,7 +13,7 @@ const main = async () => {
   // Wait for Provider
   const api = await ApiPromise.create({
     provider: wsProvider,
-    typesBundle: typesBundle,
+    typesBundle: typesBundlePre900,
   });
   await api.isReady;
 

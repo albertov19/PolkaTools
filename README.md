@@ -38,3 +38,5 @@ Then, run script with `node`.
 `createSR25519Acc` script to create a number of SR25519 with a given prefix, they are saved into a JSON file
 
 `sendSubstrateTx` script to send a simple tx using the Substrate API, only works with SR25519 accounts (not Moonriver!). You need to provide the origin account mnemonic. Not safe for production!
+
+`getCrowdloanContAddress.` script retrieve and save in a JSON file all Crowdloan rewards information for a given network

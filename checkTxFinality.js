@@ -4,7 +4,7 @@
   finalized block.
 */
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { typesBundle } from 'moonbeam-types-bundle';
+import { typesBundlePre900 } from 'moonbeam-types-bundle';
 
 // Define the TxHash to Check Finality
 const txHash = 'tx_hash';
@@ -16,7 +16,7 @@ const main = async () => {
   // Create the provider using Moonbeam types
   const polkadotApi = await ApiPromise.create({
     provider: wsProvider,
-    typesBundle: typesBundle,
+    typesBundle: typesBundlePre900,
   });
   await polkadotApi.isReady;
 
