@@ -12,7 +12,7 @@ Install packages:
 yarn
 ```
 
-Then, run script with `node`.
+Then, run script with `node` or `python` (`python3`) depending on the file
 
 
 ## Scripts
@@ -25,7 +25,7 @@ Then, run script with `node`.
 
 `checkBlockFinality` prints the latest finalized block in the provided chain
 
-`checkTxBlockFinality` checks if a given Tx Hash has been finalized
+`checkTxFinality` checks if a given Tx Hash has been finalized (both for `node` or `python`)
 
 `getAccFromJSON` prints the private key of a JSON file (DO NOT SHARE YOUR PRIVATE KEY)
 
