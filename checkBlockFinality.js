@@ -4,7 +4,6 @@
   of the transaction and check if blockTransaction <= blockFinalized
 */
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { typesBundlePre900 } from 'moonbeam-types-bundle';
 
 // Create Provider
 const wsProvider = new WsProvider('wss://wss.moonriver.moonbeam.network');
@@ -13,7 +12,6 @@ const main = async () => {
   // Wait for Provider
   const api = await ApiPromise.create({
     provider: wsProvider,
-    typesBundle: typesBundlePre900,
   });
   await api.isReady;
 

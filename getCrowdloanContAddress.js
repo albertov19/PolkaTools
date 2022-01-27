@@ -3,7 +3,6 @@
   addresses and store them in a JSON file
 */
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { typesBundlePre900 } from 'moonbeam-types-bundle';
 import * as fs from 'fs';
 
 // Create Provider
@@ -13,7 +12,6 @@ const main = async () => {
   // Wait for Provider
   const api = await ApiPromise.create({
     provider: wsProvider,
-    typesBundle: typesBundlePre900,
   });
   await api.isReady;
 

@@ -1,7 +1,7 @@
 from substrateinterface import SubstrateInterface
 
 # Define the Ethereum TxHash to Check Finality
-txHash = '0xb8bf87f49dd9c0f41342813ce719c0e16370bf48fd3939d157b103a7436cb0b3'
+txHash = 'txHash'
 # Point API Provider to Moonriver Network
 moonbeamAPIProvider = SubstrateInterface(
     url="wss://wss.moonriver.moonbeam.network",
