@@ -7,7 +7,7 @@ const keyringSR25519 = new Keyring({ type: 'sr25519' });
 const keyringECDSA = new Keyring({ type: 'ethereum' });
 
 // Import from Mnemonic
-const mnemonic = 'arena decline shell buzz skin crash private police review mystery orient flee';
+const mnemonic = 'mnemonic';
 // Define index of the derivation path and the derivation path
 const index = 0;
 const ethDerPath = "m/44'/60'/0'/0/" + index;
