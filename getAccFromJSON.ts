@@ -10,25 +10,18 @@ import yargs from 'yargs';
 import fs from 'fs';
 
 // Get input arguments
-const argv = yargs(process.argv).argv;
+const args = yargs.options({
+    file: { type: 'string', demandOption: true, alias: 'f' },
+    password: { type: 'string', demandOption: true, alias: 'p' },
+}).argv;
 
 // Enter JSON file name
-let fileName;
-if (argv.file) {
-  fileName = argv.file;
-} else {
-  fileName = 'file_name';
-}
+let fileName = args['file'];
 
 // Password that you used for the account
-let accountPassword;
-if (argv.password) {
-  accountPassword = argv.password;
-} else {
-  accountPassword = 'password';
-}
+let accountPassword = args['password'];
 
-let rawdata = JSON.parse(fs.readFileSync(fileName + '.json'));
+let rawdata = JSON.parse(fs.readFileSync(fileName + '.json').toString());
 
 // Decode the account
 const decoded = decodePair(accountPassword, base64Decode(rawdata.encoded), rawdata.encoding.type);

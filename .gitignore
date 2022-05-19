@@ -1,6 +1,5 @@
 node_modules
 file_name.json
 accounts.json
-movr_rewards_addresses.json
-moonbeam_staking_addresses.json
-moonriver_staking_addresses.json
+*rewards_addresses.json
+*staking_addresses.json
