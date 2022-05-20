@@ -17,6 +17,8 @@ Then, run script with `node` or `python` (`python3`) depending on the file
 
 ## Scripts
 
+`calculateDerivedAddress` calculates the derivative addres sof a given index
+
 `checkBlockFinality` prints the latest finalized block in the provided chain
 
 `checkTxFinality` checks if a given Tx Hash has been finalized (both for `node` or `python`)
