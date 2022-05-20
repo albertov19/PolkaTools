@@ -1,5 +1,5 @@
 import { blake2AsU8a, encodeAddress, decodeAddress } from '@polkadot/util-crypto';
-import { u8aToHex, hexToU8a, bnToU8a, stringToU8a } from '@polkadot/util';
+import { u8aToHex, hexToU8a, bnToU8a } from '@polkadot/util';
 
 import yargs from 'yargs';
 
