@@ -23,7 +23,7 @@ const derivative = u8aToHex(
         new Uint8Array([
             ...new TextEncoder().encode('modlpy/utilisuba'),
             ...address,
-            ...bnToU8a(args['index'], 16),
+            ...bnToU8a(args['index'], 16).reverse(),
         ])
     )
 );
