@@ -69,13 +69,13 @@ const main = async () => {
   if (option === 0) {
     // Create Types
     let txCall = api.createType('Call', hexToU8a(args['call'])) as any;
-    console.log(txCall.toHuman());
     txFee = await api.tx(txCall).paymentInfo(alice);
   } else {
     txFee = await api.tx[args['pallet']][args['extrinsic']](...args['input']).paymentInfo(alice);
   }
 
   console.log(`Fee of your call is ${txFee.partialFee.toHuman()}`);
+  console.log(`Weight of your call is ${txFee.weight.toHuman()}`);
 
   await api.disconnect();
 };
