@@ -1,7 +1,4 @@
 import { ApiPromise, WsProvider, Keyring } from '@polkadot/api';
-import { hexToU8a, u8aToHex } from '@polkadot/util';
-
-import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 import yargs from 'yargs';
 
