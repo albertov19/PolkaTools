@@ -3,26 +3,26 @@
   Taken from: https://gist.github.com/crystalin/b2ce44a208af60d62b5ecd1bad513bce
 */
 
-import { ApiPromise, WsProvider } from "@polkadot/api";
-import yargs from "yargs";
+import { ApiPromise, WsProvider } from '@polkadot/api';
+import yargs from 'yargs';
 
 // This script will listen to all GLMR transfers (Substrate & Ethereum) and extract the tx hash
 // It can be adapted for Moonriver or Moonbase Alpha
 
 const args = yargs.options({
-  network: { type: "string", demandOption: true, alias: "n" },
+  network: { type: 'string', demandOption: true, alias: 'n' },
 }).argv;
 
 // Create Provider
 let wsProvider;
-if (args["network"] === "moonbeam") {
-  wsProvider = new WsProvider("wss://wss.api.moonbeam.network");
-} else if (args["network"] === "moonriver") {
-  wsProvider = new WsProvider("wss://wss.api.moonriver.moonbeam.network");
-} else if (args["network"] === "moonbase") {
-  wsProvider = new WsProvider("wss://wss.api.moonbase.moonbeam.network");
+if (args['network'] === 'moonbeam') {
+  wsProvider = new WsProvider('wss://wss.api.moonbeam.network');
+} else if (args['network'] === 'moonriver') {
+  wsProvider = new WsProvider('wss://wss.api.moonriver.moonbeam.network');
+} else if (args['network'] === 'moonbase') {
+  wsProvider = new WsProvider('wss://wss.api.moonbase.moonbeam.network');
 } else {
-  console.error("Network not supported");
+  console.error('Network not supported');
   process.exit();
 }
 
@@ -45,7 +45,7 @@ const main = async () => {
         method: { args, method, section },
       } = extrinsic;
 
-      const isEthereum = section == "ethereum" && method == "transact";
+      const isEthereum = section == 'ethereum' && method == 'transact';
 
       const tx = args[0] as any;
 
@@ -65,12 +65,12 @@ const main = async () => {
       );
 
       // This hash will only exist if the transaction was executed through ethereum.
-      let ethereumHash = "";
+      let ethereumHash = '';
 
       if (isEthereum) {
         // Search for ethereum execution
         events.forEach(({ event }) => {
-          if (event.section == "ethereum" && event.method == "Executed") {
+          if (event.section == 'ethereum' && event.method == 'Executed') {
             ethereumHash = event.data[2].toString();
           }
         });
@@ -78,7 +78,7 @@ const main = async () => {
 
       // Search if it is a transfer
       events.forEach(({ event }) => {
-        if (event.section == "balances" && event.method == "Transfer") {
+        if (event.section == 'balances' && event.method == 'Transfer') {
           const from = event.data[0].toString();
           const to = event.data[1].toString();
           const balance = (event.data[2] as any).toBigInt();

@@ -3,22 +3,22 @@
   Polkadot.js API - Not to be used in production
   Use at your own discretion
 */
-import { ApiPromise, WsProvider } from "@polkadot/api";
-import yargs from "yargs";
+import { ApiPromise, WsProvider } from '@polkadot/api';
+import yargs from 'yargs';
 
 // Get input arguments
 const args = yargs.options({
-  network: { type: "string", demandOption: true, alias: "n" },
+  network: { type: 'string', demandOption: true, alias: 'n' },
 }).argv;
 
 // Create Provider
 let wsProvider;
-if (args["network"] === "moonbeam") {
-  wsProvider = new WsProvider("wss://wss.api.moonbeam.network");
-} else if (args["network"] === "moonriver") {
-  wsProvider = new WsProvider("wss://wss.api.moonriver.moonbeam.network");
+if (args['network'] === 'moonbeam') {
+  wsProvider = new WsProvider('wss://wss.api.moonbeam.network');
+} else if (args['network'] === 'moonriver') {
+  wsProvider = new WsProvider('wss://wss.api.moonriver.moonbeam.network');
 } else {
-  console.error("Network not supported");
+  console.error('Network not supported');
   process.exit();
 }
 

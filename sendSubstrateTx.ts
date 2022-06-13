@@ -7,9 +7,9 @@
   Provide the destination address
   Provide the transfer amount
 */
-import { ApiPromise, WsProvider, Keyring } from "@polkadot/api";
-import { cryptoWaitReady } from "@polkadot/util-crypto";
-import { formatBalance } from "@polkadot/util";
+import { ApiPromise, WsProvider, Keyring } from '@polkadot/api';
+import { cryptoWaitReady } from '@polkadot/util-crypto';
+import { formatBalance } from '@polkadot/util';
 
 // Global Variables
 // Account prefix of SR25519 accounts (0 - Polkadot / 2 - Kusama / 42 - Generic Substrate)
@@ -22,20 +22,20 @@ const transferAmount = 1;
 // Calculate the formatted transaction amount
 const fmtAmount = formatBalance(
   BigInt(transferAmount * 10 ** decimals),
-  { withSi: true, withUnit: "Unit" },
+  { withSi: true, withUnit: 'Unit' },
   decimals
 );
 
 // Account funded
-const fromMnemonic = "mnemonic"; //NOT SAFE FOR PRODUCTION
+const fromMnemonic = 'mnemonic'; //NOT SAFE FOR PRODUCTION
 // Accounts to fund
-const addressTo = "addressTo";
+const addressTo = 'addressTo';
 
 // Create a keyring instance with type SR25519 and given prefix (Moonriver uses Ethereum type!)
-const keyring = new Keyring({ type: "sr25519", ss58Format: accountPrefix });
+const keyring = new Keyring({ type: 'sr25519', ss58Format: accountPrefix });
 
 // Create provider
-const wsProvider = new WsProvider("wss://wss-relay.testnet.moonbeam.network");
+const wsProvider = new WsProvider('wss://wss-relay.testnet.moonbeam.network');
 
 const sendTransfer = async (addressTo, accountFrom, api) => {
   // Transfer to address
@@ -60,7 +60,7 @@ const main = async () => {
 
   // Load origin account with keyring from mnemonic
   const accountFrom = keyring.createFromUri(fromMnemonic, {
-    name: "sr25519",
+    name: 'sr25519',
     ss58Format: accountPrefix,
   });
 
