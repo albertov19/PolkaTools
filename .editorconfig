@@ -2,11 +2,13 @@
 indent_style=space
 indent_size=2
 max_line_length=100
+quote_type = single
 
 [*.js]
 indent_style=space
 indent_size=2
 max_line_length=100
+quote_type = single
 
 [*.py]
 indent_style=space
