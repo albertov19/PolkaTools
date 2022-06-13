@@ -3,24 +3,24 @@
   It will fetch the block number of the tx and compare it with the latest
   finalized block.
 */
-import { ApiPromise, WsProvider } from "@polkadot/api";
-import yargs from "yargs";
+import { ApiPromise, WsProvider } from '@polkadot/api';
+import yargs from 'yargs';
 
 const args = yargs.options({
-  "tx-hash": { type: "string", demandOption: true, alias: "tx" },
-  network: { type: "string", demandOption: true, alias: "n" },
+  'tx-hash': { type: 'string', demandOption: true, alias: 'tx' },
+  network: { type: 'string', demandOption: true, alias: 'n' },
 }).argv;
 
 // Create Provider
 let wsProvider;
-if (args["network"] === "moonbeam") {
-  wsProvider = new WsProvider("wss://wss.api.moonbeam.network");
-} else if (args["network"] === "moonriver") {
-  wsProvider = new WsProvider("wss://wss.api.moonriver.moonbeam.network");
-} else if (args["network"] === "moonbase") {
-  wsProvider = new WsProvider("wss://wss.api.moonbase.moonbeam.network");
+if (args['network'] === 'moonbeam') {
+  wsProvider = new WsProvider('wss://wss.api.moonbeam.network');
+} else if (args['network'] === 'moonriver') {
+  wsProvider = new WsProvider('wss://wss.api.moonriver.moonbeam.network');
+} else if (args['network'] === 'moonbase') {
+  wsProvider = new WsProvider('wss://wss.api.moonbase.moonbeam.network');
 } else {
-  console.error("Network not supported");
+  console.error('Network not supported');
   process.exit();
 }
 
@@ -38,7 +38,7 @@ const main = async () => {
   const finalizedBlockHeader = (await api.rpc.chain.getHeader(finalizedHeadHash)).toJSON();
 
   // Get the transaction receipt of the given tx hash
-  const txReceipt = (await api.rpc.eth.getTransactionReceipt(args["tx-hash"])).toJSON();
+  const txReceipt = (await api.rpc.eth.getTransactionReceipt(args['tx-hash'])).toJSON();
 
   // We can not verify if the tx is in block because api.rpc.eth.getBlockByNumber
   // does not return the list of tx hash
@@ -52,7 +52,7 @@ const main = async () => {
       }`
     );
   } else {
-    console.log("Your transaction has not been included in the canonical chain");
+    console.log('Your transaction has not been included in the canonical chain');
   }
 
   await api.disconnect();
