@@ -28,15 +28,15 @@ let accountType;
 switch (args['network']) {
   case 'moonbeam':
     wsProvider = 'wss://wss.api.moonbeam.network';
-    accountType = 'eth';
+    accountType = 'ethereum';
     break;
   case 'moonriver':
     wsProvider = 'wss://wss.api.moonriver.moonbeam.network';
-    accountType = 'eth';
+    accountType = 'ethereum';
     break;
   case 'moonbase':
     wsProvider = 'wss://wss.api.moonbase.moonbeam.network';
-    accountType = 'eth';
+    accountType = 'ethereum';
     break;
   case 'polkadot':
     wsProvider = 'wss://rpc.polkadot.io';
@@ -61,9 +61,12 @@ const main = async () => {
   });
   await cryptoWaitReady();
 
-  // Load Alice
+  // Load account - DO NOT USE IN PRODUCTION!
   const keyring = new Keyring({ type: accountType });
-  const alice = keyring.addFromUri('//Alice', { name: 'Alice default' });
+  const alice = keyring.addFromUri(
+    'slight return mercy battle script flee firm behave mix crawl surprise mimic',
+    { name: 'DO NOT USE IN PRODUCTION' }
+  );
 
   let txFee;
   if (option === 0) {
