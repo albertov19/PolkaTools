@@ -25,6 +25,8 @@ Then, run script with `node` or `python` (`python3`) depending on the file
 
 `createSR25519Acc` script to create a number of SR25519 with a given prefix, they are saved into a JSON file
 
+`encodeDecodeAddress` simple snippet to show encode and decode functionity for substrate accounts
+
 `getAccFromJSON` prints the private key of a JSON file (DO NOT SHARE YOUR PRIVATE KEY)
 
 `getAddressFromMnemonic` derives the Ethereum address (for a given index) from a mnemonic using the `m/44/60/0/0/0` derivation path and logs the associated private key. Also derives the Substrate generic address with the `//hard/soft` derivation path
