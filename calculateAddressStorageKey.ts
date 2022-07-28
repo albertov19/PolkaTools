@@ -4,8 +4,8 @@ import { u8aToHex, hexToU8a } from '@polkadot/util';
 import yargs from 'yargs';
 
 const args = yargs.options({
-  address: { type: 'string', demandOption: false, alias: 'a' },
-  'ws-provider': { type: 'string', demandOption: false, alias: 'w' },
+  address: { type: 'string', demandOption: true, alias: 'a' },
+  //'ws-provider': { type: 'string', demandOption: false, alias: 'w' },
 }).argv;
 
 /*
@@ -15,14 +15,14 @@ Moonbase wss://wss.api.moonbase.moonbeam.network
 */
 
 // Create Provider
-const wsProvider = new WsProvider(args['ws-provider']);
+//const wsProvider = new WsProvider(args['ws-provider']);
 
 const main = async () => {
   // Wait for Provider
-  const api = await ApiPromise.create({
+  /*const api = await ApiPromise.create({
     provider: wsProvider,
   });
-  await api.isReady;
+  await api.isReady;*/
 
   let palletEncoder = new TextEncoder().encode('EVM');
   let palletHash = xxhashAsU8a(palletEncoder, 128);
@@ -34,7 +34,7 @@ const main = async () => {
 
   console.log(`Storage Key ${u8aToHex(concatKey)}`);
 
-  await api.disconnect();
+  //await api.disconnect();
 };
 
 main();
