@@ -1,4 +1,4 @@
-import { ApiPromise, WsProvider } from '@polkadot/api';
+//import { ApiPromise,  } from '@polkadot/api';
 import { xxhashAsU8a, blake2AsU8a } from '@polkadot/util-crypto';
 import { u8aToHex, hexToU8a } from '@polkadot/util';
 import yargs from 'yargs';
