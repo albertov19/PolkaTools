@@ -36,7 +36,7 @@ for (let l = 0; l < args['index'].length; l++) {
       new Uint8Array([
         ...new TextEncoder().encode('modlpy/utilisuba'),
         ...address,
-        ...bnToU8a(args['index'][l], 16).reverse(),
+        ...bnToU8a(args['index'][l], { bitLength: 16 }),
       ]),
       256
     )
