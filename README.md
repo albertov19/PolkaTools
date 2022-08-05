@@ -17,6 +17,8 @@ Then, run script with `node` or `python` (`python3`) depending on the file
 
 ## Scripts
 
+`calculateAddressStorageKey` calculates the storage key for an EVM address
+
 `calculateDerivedAddress` calculates the derivative addres sof a given index
 
 `checkBlockFinality` prints the latest finalized block in the provided chain
@@ -26,6 +28,8 @@ Then, run script with `node` or `python` (`python3`) depending on the file
 `createSR25519Acc` script to create a number of SR25519 with a given prefix, they are saved into a JSON file
 
 `encodeDecodeAddress` simple snippet to show encode and decode functionity for substrate accounts
+
+`estiamteTxFee` estimates the transaction fee for a given call
 
 `getAccFromJSON` prints the private key of a JSON file (DO NOT SHARE YOUR PRIVATE KEY)
 
@@ -42,6 +46,8 @@ Then, run script with `node` or `python` (`python3`) depending on the file
 `getStakingAddress` fetches all the addresses that are staking and their total in either `moonbeam` or `moonriver` (input with yargs like `node getStakingAddress.js --network moonbeam`)
 
 `getStakingData` gets staking data from all collators
+
+`nestAsDerivatives` nests as derivative calls to as many levels as desired and provided the encoded call data
 
 `sendSubstrateTx` script to send a simple tx using the Substrate API, only works with SR25519 accounts (not Moonriver!). You need to provide the origin account mnemonic. Not safe for production!
 
