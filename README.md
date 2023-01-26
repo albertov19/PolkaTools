@@ -51,4 +51,6 @@ Then, run script with `node` or `python` (`python3`) depending on the file
 
 `sendSubstrateTx` script to send a simple tx using the Substrate API, only works with SR25519 accounts (not Moonriver!). You need to provide the origin account mnemonic. Not safe for production!
 
+`setDummyCode` calculates the encoded call data to set the dummy code for the provided precompiles
+
 `verifyMessage` verifys a signed message by providing the signers public Address, the message and the signed message
