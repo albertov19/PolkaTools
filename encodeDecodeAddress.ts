@@ -6,7 +6,7 @@ import yargs from 'yargs';
 const args = yargs.options({
   address: { type: 'string', demandOption: true, alias: 'a' },
   action: { type: 'string', demandOption: true, alias: 'x' },
-  prefix: { type: 'number', demandOption: false, alias: 'p' },
+  prefix: { type: 'number', demandOption: false, alias: 'p', default: 0 },
 }).argv;
 
 switch (args['action'].toLowerCase()) {

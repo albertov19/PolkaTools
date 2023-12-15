@@ -19,7 +19,13 @@ Then, run script with `node` or `python` (`python3`) depending on the file
 
 `calculateAddressStorageKey` calculates the storage key for an EVM address
 
-`calculateDerivedAddress` calculates the derivative addres sof a given index
+`calculateDerivedAddress` calculates the derivative address of a given index
+
+`calculateMultisigAddess` calculates a multisig address based on an array of address and a threshold, for example: 
+
+```
+ts-node calculateMultisigAddress.ts --a '["14gZZ9xc52TKDJA6LmzX7iVBcdPeBNX6B3NkGubKd6pLTcSe","1333RgL47QYYkmJk1BHzfEF4hRE7Bd2Yf8P2HdV8Cn3p9hVh"]' --t 2
+```
 
 `checkBlockFinality` prints the latest finalized block in the provided chain
 
