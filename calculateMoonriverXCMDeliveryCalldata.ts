@@ -292,7 +292,11 @@ const getKusamaParachainCallData = async (api) => {
   // KSM fee for BuyExecution (baseline)
   const ksmFee = BigInt(10000000000);
   // BuyExecution in parachains with less ksm
-  const paraFeeFactor = 100;
+  const paraFeeFactor = {
+    2000: 100,
+    2001: 100,
+    2110: 10,
+  };
 
   // KSM Multilocation
   const ksmML = {
@@ -349,7 +353,7 @@ const getKusamaParachainCallData = async (api) => {
               id: {
                 Concrete: ksmML,
               },
-              fun: { Fungible: ksmPerParachain[paraID] + ksmFee / BigInt(paraFeeFactor) },
+              fun: { Fungible: ksmPerParachain[paraID] + ksmFee / BigInt(paraFeeFactor[paraID]) },
             },
           ],
         },
@@ -362,7 +366,7 @@ const getKusamaParachainCallData = async (api) => {
           },
         },
         // We need to build an inner XCM depending on the ParaID
-        xcm: buildInnerXCM(paraID, ksmFee / BigInt(paraFeeFactor), ksmMLParachain),
+        xcm: buildInnerXCM(paraID, ksmFee / BigInt(paraFeeFactor[paraID]), ksmMLParachain),
       },
     });
   }
