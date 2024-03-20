@@ -2,8 +2,9 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import HydraDXFixData from './misc/HydraDXAsset.json';
 
 // Create Provider
-const wsProvider = 'wss://rpc.helikon.io/hydradx';
+const wsProvider = 'wss://hydradx-rpc.dwellir.com';
 const glmrFee = '100000000000000000';
+const hydraDX = '0x7369626cf2070000000000000000000000000000';
 
 const main = async () => {
   // Load Provider
@@ -62,12 +63,22 @@ const xcmMessage = (assetAddress, assetAmount, targetAddress) => {
       {
         id: {
           Concrete: {
-            parents: 1,
+            parents: 0,
             interior: {
-              X3: [
-                {
-                  Parachain: 2004,
-                },
+              X1: {
+                PalletInstance: 10,
+              },
+            },
+          },
+        },
+        fun: { Fungible: BigInt(glmrFee) },
+      },
+      {
+        id: {
+          Concrete: {
+            parents: 0,
+            interior: {
+              X2: [
                 {
                   PalletInstance: 110,
                 },
@@ -83,24 +94,6 @@ const xcmMessage = (assetAddress, assetAmount, targetAddress) => {
         },
         fun: { Fungible: BigInt(assetAmount) },
       },
-      {
-        id: {
-          Concrete: {
-            parents: 1,
-            interior: {
-              X2: [
-                {
-                  Parachain: 2004,
-                },
-                {
-                  PalletInstance: 10,
-                },
-              ],
-            },
-          },
-        },
-        fun: { Fungible: BigInt(glmrFee) },
-      },
     ],
   });
 
@@ -113,16 +106,11 @@ const xcmMessage = (assetAddress, assetAmount, targetAddress) => {
       {
         id: {
           Concrete: {
-            parents: 1,
+            parents: 0,
             interior: {
-              X2: [
-                {
-                  Parachain: 2004,
-                },
-                {
-                  PalletInstance: 10,
-                },
-              ],
+              X1: {
+                PalletInstance: 10,
+              },
             },
           },
         },
@@ -136,9 +124,29 @@ const xcmMessage = (assetAddress, assetAmount, targetAddress) => {
   xcmMessage.push({
     DepositAsset: {
       assets: {
-        Wild: {
-          AllCounted: 2,
-        },
+        Definite: [
+          {
+            id: {
+              Concrete: {
+                parents: 0,
+                interior: {
+                  X2: [
+                    {
+                      PalletInstance: 110,
+                    },
+                    {
+                      AccountKey20: {
+                        network: null,
+                        key: assetAddress,
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            fun: { Fungible: BigInt(assetAmount) },
+          },
+        ],
       },
       beneficiary: {
         parents: 0,
@@ -147,6 +155,29 @@ const xcmMessage = (assetAddress, assetAmount, targetAddress) => {
             AccountKey20: {
               network: null,
               key: targetAddress,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // Deposit GLMR to HydraDX Account
+  // Deposit Asset
+  xcmMessage.push({
+    DepositAsset: {
+      assets: {
+        Wild: {
+          AllCounted: 1,
+        },
+      },
+      beneficiary: {
+        parents: 0,
+        interior: {
+          X1: {
+            AccountKey20: {
+              network: null,
+              key: hydraDX,
             },
           },
         },

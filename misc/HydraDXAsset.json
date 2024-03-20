@@ -9,15 +9,6 @@
     "assetAddress": "0xab3f0245b83feb11d15aaffefd7ad465a59817ed"
   },
   {
-    "amount": "1000000",
-    "from": "7NSzbPmboW99jDFj9MoHDU8R1oNxs4pVDnNzWogcoyE2DhVZ",
-    "decoded": "0xd6a5278d06644f0ca64831082203b30484d98d5a34af53f05e41ba6f6a7a8356",
-    "url": "https://hydradx.subscan.io/xcm_message/polkadot-30936c1993244ccf09ee86cba69ca7472b34dbc0",
-    "to": "0xb32b41625e14e55757a5d0cfcdd9768a1695c5f3",
-    "assetID": 21,
-    "assetAddress": "0x931715fee2d06333043d11f658c8ce934ac61d0c"
-  },
-  {
     "amount": "51020000",
     "from": "7NwzAHckkFHW81cUYSZm98wMCpc4byVHVTQsgmwhVtGPztKm",
     "decoded": "0xecc1d06726f784c0c559779d4c088b5cc276ad31a8ca3d2380532a6c348db144",
@@ -34,23 +25,5 @@
     "to": "0xccb3d79521602342ce2F03F523F9d1A645523cD6",
     "assetID": 19,
     "assetAddress": "0xe57ebd2d67b462e9926e04a8e33f01cd0d64346d"
-  },
-  {
-    "amount": "2000000",
-    "from": "7MNBdz5RAMGq88AjLSB9hmtuYLeQxBxaLSm5QCcbnimaYBnc",
-    "decoded": "0xa6bddfacdff6bc31e990c8bd72b0c833062169a909bfaf7f9ee19532d8e5dc1f",
-    "url": "https://hydradx.subscan.io/xcm_message/polkadot-58d12505d68c135aca79406e443c0b8753650a02",
-    "to": "0x6CED59A8D2dA7bdf3E6c2920F632421A8f3c34D1",
-    "assetID": 21,
-    "assetAddress": "0x931715fee2d06333043d11f658c8ce934ac61d0c"
-  },
-  {
-    "amount": "2000000",
-    "from": "7MNBdz5RAMGq88AjLSB9hmtuYLeQxBxaLSm5QCcbnimaYBnc",
-    "decoded": "0xa6bddfacdff6bc31e990c8bd72b0c833062169a909bfaf7f9ee19532d8e5dc1f",
-    "url": "https://hydradx.subscan.io/xcm_message/polkadot-ed9f74bec9221679267ed581617246583b3b6f42",
-    "to": "0x6CED59A8D2dA7bdf3E6c2920F632421A8f3c34D1",
-    "assetID": 21,
-    "assetAddress": "0x931715fee2d06333043d11f658c8ce934ac61d0c"
   }
 ]
