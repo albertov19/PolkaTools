@@ -1,5 +1,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
+import { cryptoWaitReady, sortAddresses, decodeAddress } from '@polkadot/util-crypto';
+import { u8aToHex } from '@polkadot/util';
+
 import yargs from 'yargs';
 
 // Get input arguments
@@ -13,15 +15,16 @@ const args = yargs.options({
 
 // PAL Config
 const threshold = 5;
-const signatories = [
+const signatories = sortAddresses([
   '14DsLzVyTUTDMm2eP3czwPbH53KgqnQRp3CJJZS9GR7yxGDP',
-  '1brScQ9KDuFB2EsBc93smHY5T464gjWzzvtnJbBwKofTqad',
   '12BZFbrNksTKwHtaBojnVtoN8BoXKmBFzT3xDnHh7P9t2Cg5',
-  '12LMDqivf5jDB7qkNLNVZf6vYHmBbDbiyV63jcRenAif4gSk',
+  '1brScQ9KDuFB2EsBc93smHY5T464gjWzzvtnJbBwKofTqad',
   '15BERoWxrWC61cAb4JjpUdM7sy8FAS9uduismDbZ7PURZLto',
   '15aSnCUARuwBoLYn6nkFj5ap2DUfRmKcXJaAotfVwvVQxNK3',
+  '12LMDqivf5jDB7qkNLNVZf6vYHmBbDbiyV63jcRenAif4gSk',
   '16AhqStFQa8GrffE7WapHrUQ29dmioZHuwFTn4z9fQ7WBGBZ',
-];
+]);
+
 const parentBounty = 22;
 const palCurator = '167dwA1UDmWSBRrFd9dXqXjdk1NRhqVjenT2FbHGDyy44GjS';
 const palReftime = 300000000;
@@ -91,7 +94,9 @@ const main = async () => {
   // Multisig Call
   let multisigTx = await api.tx.multisig.asMulti(
     threshold,
-    signatories.filter((input) => input !== args['sender']),
+    signatories.filter(
+      (input) => u8aToHex(decodeAddress(input)) !== u8aToHex(decodeAddress(args['sender']))
+    ),
     null,
     proxyTx,
     {
