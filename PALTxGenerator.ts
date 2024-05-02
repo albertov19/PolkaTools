@@ -1,8 +1,9 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { cryptoWaitReady, sortAddresses, decodeAddress } from '@polkadot/util-crypto';
+import { cryptoWaitReady, sortAddresses, decodeAddress, blake2AsHex } from '@polkadot/util-crypto';
 import { u8aToHex } from '@polkadot/util';
 
 import yargs from 'yargs';
+import { createImportSpecifier } from 'typescript';
 
 // Get input arguments
 const args = yargs.options({
@@ -88,8 +89,13 @@ const main = async () => {
   // Batch Calls
   let batchTx = await api.tx.utility.batch(batchArgs);
 
+  console.log(`Batch Tx ${batchTx.method.toHex()}\n`);
+
   // Proxy call
   let proxyTx = await api.tx.proxy.proxy(palCurator, null, batchTx);
+
+  console.log(`Proxy Tx ${proxyTx.method.toHex()}`);
+  console.log(`Proxy Tx hash ${blake2AsHex(proxyTx.method.toHex())}\n`);
 
   // Multisig Call
   let multisigTx = await api.tx.multisig.asMulti(
@@ -105,7 +111,7 @@ const main = async () => {
     }
   );
 
-  console.log(multisigTx.toHex());
+  console.log(`Multisig Tx ${multisigTx.toHex()}`);
 
   await api.disconnect();
 };
