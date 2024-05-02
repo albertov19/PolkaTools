@@ -21,7 +21,6 @@ const signatories = [
   '16AhqStFQa8GrffE7WapHrUQ29dmioZHuwFTn4z9fQ7WBGBZ',
 ];
 const parentBounty = 22;
-const proxyReal = '16AhqStFQa8GrffE7WapHrUQ29dmioZHuwFTn4z9fQ7WBGBZ';
 const palCurator = '167dwA1UDmWSBRrFd9dXqXjdk1NRhqVjenT2FbHGDyy44GjS';
 const palReftime = 300000000;
 const palProofSize = 10000;
@@ -85,7 +84,7 @@ const main = async () => {
   let batchTx = await api.tx.utility.batch(batchArgs);
 
   // Proxy call
-  let proxyTx = await api.tx.proxy.proxy(proxyReal, null, batchTx);
+  let proxyTx = await api.tx.proxy.proxy(palCurator, null, batchTx);
 
   // Multisig Call
   let multisigTx = await api.tx.multisig.asMulti(threshold, signatories, null, proxyTx, {
