@@ -19,7 +19,7 @@
     "homepage": "https://github.com/albertov19/PolkaTools#readme",
     "dependencies": {
         "@moonbeam-network/api-augment": "^0.2700.0",
-        "@polkadot/api": "^10.11.2",
+        "@polkadot/api": "^11.0.2",
         "@polkadot/keyring": "^12.6.2",
         "@polkadot/util": "^12.6.2",
         "@polkadot/util-crypto": "^12.6.2",

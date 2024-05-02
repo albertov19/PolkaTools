@@ -60,3 +60,5 @@ ts-node calculateMultisigAddress.ts --a '["14gZZ9xc52TKDJA6LmzX7iVBcdPeBNX6B3NkG
 `setDummyCode` calculates the encoded call data to set the dummy code for the provided precompiles
 
 `verifyMessage` verifys a signed message by providing the signers public Address, the message and the signed message
+
+`PALTxGenerator` a specific script that helps generating Polkadot Assurance Legion Multisig transactions
