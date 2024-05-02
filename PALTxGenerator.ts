@@ -4,6 +4,7 @@ import yargs from 'yargs';
 
 // Get input arguments
 const args = yargs.options({
+  sender: { type: 'string', demandOption: true, alias: 's' },
   propose: { type: 'array', demandOption: false }, // [Child Bounty, fee]
   accept: { type: 'number', demandOption: false }, // Child Bounty
   award: { type: 'array', demandOption: false }, // [Child Bounty, Beneficiary]
@@ -88,10 +89,16 @@ const main = async () => {
   let proxyTx = await api.tx.proxy.proxy(palCurator, null, batchTx);
 
   // Multisig Call
-  let multisigTx = await api.tx.multisig.asMulti(threshold, signatories, null, proxyTx, {
-    refTime: palReftime,
-    proofSize: palProofSize,
-  });
+  let multisigTx = await api.tx.multisig.asMulti(
+    threshold,
+    signatories.filter((input) => input !== args['sender']),
+    null,
+    proxyTx,
+    {
+      refTime: palReftime,
+      proofSize: palProofSize,
+    }
+  );
 
   console.log(multisigTx.toHex());
 
