@@ -13,6 +13,7 @@ const args = yargs.options({
 // PAL Config
 const threshold = 5;
 const signatories = [
+  '14DsLzVyTUTDMm2eP3czwPbH53KgqnQRp3CJJZS9GR7yxGDP',
   '1brScQ9KDuFB2EsBc93smHY5T464gjWzzvtnJbBwKofTqad',
   '12BZFbrNksTKwHtaBojnVtoN8BoXKmBFzT3xDnHh7P9t2Cg5',
   '12LMDqivf5jDB7qkNLNVZf6vYHmBbDbiyV63jcRenAif4gSk',
@@ -92,7 +93,7 @@ const main = async () => {
     proofSize: palProofSize,
   });
 
-  console.log(multisigTx.toHex());
+  console.log(multisigTx.method.toHex());
 
   await api.disconnect();
 };
