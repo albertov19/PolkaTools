@@ -93,7 +93,7 @@ const main = async () => {
     proofSize: palProofSize,
   });
 
-  console.log(multisigTx.method.toHex());
+  console.log(multisigTx.toHex());
 
   await api.disconnect();
 };
