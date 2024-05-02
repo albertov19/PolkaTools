@@ -89,13 +89,15 @@ const main = async () => {
   // Batch Calls
   let batchTx = await api.tx.utility.batch(batchArgs);
 
-  console.log(`Batch Tx ${batchTx.method.toHex()}\n`);
+  console.log(`\nBatch Tx for Chopsticks Test ${batchTx.toHex()}\n`);
+
+  console.log(`Batch Tx for Multix Submission ${batchTx.method.toHex()}\n`);
 
   // Proxy call
   let proxyTx = await api.tx.proxy.proxy(palCurator, null, batchTx);
 
-  console.log(`Proxy Tx ${proxyTx.method.toHex()}`);
-  console.log(`Proxy Tx hash ${blake2AsHex(proxyTx.method.toHex())}\n`);
+  //console.log(`Proxy Tx ${proxyTx.method.toHex()}`);
+  //console.log(`Proxy Tx hash ${blake2AsHex(proxyTx.method.toHex())}\n`);
 
   // Multisig Call
   let multisigTx = await api.tx.multisig.asMulti(
