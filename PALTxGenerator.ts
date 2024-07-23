@@ -1,9 +1,9 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { cryptoWaitReady, sortAddresses, decodeAddress, blake2AsHex } from '@polkadot/util-crypto';
+import { cryptoWaitReady, sortAddresses, decodeAddress } from '@polkadot/util-crypto';
 import { u8aToHex } from '@polkadot/util';
+import { signFakeWithApi } from '@acala-network/chopsticks-utils';
 
 import yargs from 'yargs';
-import { createImportSpecifier } from 'typescript';
 
 // Get input arguments
 const args = yargs.options({
@@ -12,6 +12,7 @@ const args = yargs.options({
   accept: { type: 'number', demandOption: false }, // Child Bounty
   award: { type: 'array', demandOption: false }, // [Child Bounty, Beneficiary]
   network: { type: 'string', demandOption: false, default: 'polkadot', alias: 'n' },
+  chopsticks: { type: 'bolean', demandOption: false, nargs: 0 }, // Run Chopsticks Test at ws://localhost:8000
 }).argv;
 
 // PAL Config
@@ -114,6 +115,26 @@ const main = async () => {
   );
 
   console.log(`Multisig Tx ${multisigTx.toHex()}`);
+
+  if (args['chopsticks']) {
+    console.log('\n--- Chopsticks Testing ---');
+
+    const chopsticksWS = 'ws://127.0.0.1:8000';
+
+    const chopsticksProvider = new WsProvider(chopsticksWS);
+    const chopsticksAPI = await ApiPromise.create({
+      provider: chopsticksProvider,
+      noInitWarn: true,
+    });
+
+    let chopsticksTx = await chopsticksAPI.tx(batchTx.toHex());
+
+    await signFakeWithApi(chopsticksAPI, chopsticksTx, palCurator);
+    await chopsticksTx.send();
+
+    console.log('--- Chopsticks Test Done ---');
+    await chopsticksAPI.disconnect();
+  }
 
   await api.disconnect();
 };

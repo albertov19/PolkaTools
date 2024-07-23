@@ -2,6 +2,8 @@
 
 Different set of tools with the Polkadot API.
 
+**Use [PNPM](https://pnpm.io/) to avoid dependency conflicts**
+
 **Use at your own risk!**
 
 ## Getting Started
@@ -9,7 +11,7 @@ Different set of tools with the Polkadot API.
 Install packages:
 
 ```
-yarn
+pnpm install
 ```
 
 Then, run script with `node` or `python` (`python3`) depending on the file

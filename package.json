@@ -1,30 +1,38 @@
 {
-    "name": "polkatools",
-    "version": "1.0.0",
-    "main": "index.js",
-    "description": "Different set of tools with the Polkadot API.",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/albertov19/PolkaTools.git"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/albertov19/PolkaTools/issues"
-    },
-    "homepage": "https://github.com/albertov19/PolkaTools#readme",
-    "dependencies": {
-        "@moonbeam-network/api-augment": "^0.2700.0",
-        "@polkadot/api": "^11.0.2",
-        "@polkadot/keyring": "^12.6.2",
-        "@polkadot/util": "^12.6.2",
-        "@polkadot/util-crypto": "^12.6.2",
-        "ts-node": "^10.4.0",
-        "typescript": "^4.5.4",
-        "yargs": "^17.3.1"
-    }
+  "name": "polkatools",
+  "version": "1.0.0",
+  "main": "index.js",
+  "description": "Different set of tools with the Polkadot API.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/albertov19/PolkaTools.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/albertov19/PolkaTools/issues"
+  },
+  "homepage": "https://github.com/albertov19/PolkaTools#readme",
+  "dependencies": {
+    "@acala-network/chopsticks-utils": "^0.13.1",
+    "@moonbeam-network/api-augment": "^0.2700.0",
+    "@polkadot/api": "^12.1.1",
+    "@polkadot/rpc-provider": "^12.1.1",
+    "@polkadot/types": "^12.1.1",
+    "@polkadot/util": "^12.6.2",
+    "@polkadot/util-crypto": "^12.6.2",
+    "@polkadot/keyring": "^12.6.2",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.4",
+    "yargs": "^17.3.1"
+  },
+  "resolutions": {
+    "@polkadot/util": "13.0.2",
+    "@polkadot/util-crypto": "13.0.2",
+    "@polkadot/keyring": "13.0.2"
+  }
 }
