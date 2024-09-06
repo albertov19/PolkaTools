@@ -21,6 +21,12 @@ const main = async () => {
 
   console.log(`XCM to Fix Everything Batched: ${dispatchTx.method.toHex()}`);
 
+  // Wrap around whitelist dispatch
+
+  const whitelistTx = await api.tx.whitelist.dispatchWhitelistedCallWithPreimage(dispatchTx);
+
+  console.log(`\nWhitelist Call: ${whitelistTx.method.toHex()}`);
+
   await api.disconnect();
 };
 
