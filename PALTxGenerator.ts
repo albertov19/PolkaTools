@@ -16,14 +16,14 @@ const args = yargs.options({
 }).argv;
 
 // PAL Config
-const threshold = 5;
+const threshold = 4;
 const signatories = sortAddresses([
   '14DsLzVyTUTDMm2eP3czwPbH53KgqnQRp3CJJZS9GR7yxGDP',
-  '12BZFbrNksTKwHtaBojnVtoN8BoXKmBFzT3xDnHh7P9t2Cg5',
+  '14Pn8sUxdEMgFRDgZ5J2VfcUVMLaMQhst9XuvCj9mKJYUAN2',
   '1brScQ9KDuFB2EsBc93smHY5T464gjWzzvtnJbBwKofTqad',
   '15BERoWxrWC61cAb4JjpUdM7sy8FAS9uduismDbZ7PURZLto',
   '15aSnCUARuwBoLYn6nkFj5ap2DUfRmKcXJaAotfVwvVQxNK3',
-  '12LMDqivf5jDB7qkNLNVZf6vYHmBbDbiyV63jcRenAif4gSk',
+  '13zU1pipCuijDA1eWdHPnDgEHh3BvDJ9GsPMMFFvE5p6GF4D',
   '16AhqStFQa8GrffE7WapHrUQ29dmioZHuwFTn4z9fQ7WBGBZ',
 ]);
 
