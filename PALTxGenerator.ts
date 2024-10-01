@@ -9,7 +9,7 @@ import yargs from 'yargs';
 const args = yargs.options({
   sender: { type: 'string', demandOption: true, alias: 's' },
   propose: { type: 'array', demandOption: false }, // [Child Bounty, fee]
-  accept: { type: 'number', demandOption: false }, // Child Bounty
+  accept: { type: 'array', demandOption: false }, // Child Bounty
   award: { type: 'array', demandOption: false }, // [Child Bounty, Beneficiary]
   network: { type: 'string', demandOption: false, default: 'polkadot', alias: 'n' },
   chopsticks: { type: 'bolean', demandOption: false, nargs: 0 }, // Run Chopsticks Test at ws://localhost:8000
@@ -54,35 +54,52 @@ const main = async () => {
   // Batch Tx
   let batchArgs = [];
 
+  // Split the string inputs by commas into arrays
+  const proposeBountiesID = args['propose'] ? args['propose'][0].split(',') : [];
+  const proposeBountiesFees = args['propose'] ? args['propose'][1].split(',') : [];
+  const acceptBounties = args['accept'] ? args['accept'][0].split(',') : [];
+  const awardBounties = args['award'] ? args['award'][0].split(',') : [];
+  const awardBeneficiary = args['award'] ? args['award'][1].split(',') : [];
+
+  // Check lengths
+  if (
+    proposeBountiesID.length !== proposeBountiesFees.length ||
+    awardBounties.length !== awardBeneficiary.length
+  ) {
+    throw new Error(
+      'The size of propose bounties and fees, or award bounties and award beneficiaries must be the same.'
+    );
+  }
+
   // Propose Curator
   let proposeTx;
-  if (args['propose']) {
+  for (let i = 0; i < proposeBountiesID.length; i++) {
     proposeTx = await api.tx.childBounties.proposeCurator(
       parentBounty,
-      args['propose'][0], // Child Bounty
+      proposeBountiesID[i], // Child Bounty
       palCurator,
-      args['propose'][1] // Fee
+      proposeBountiesFees[i] // Fee
     );
     batchArgs.push(proposeTx);
   }
 
   // Accept Curator
   let acceptTx;
-  if (args['accept']) {
+  for (let i = 0; i < acceptBounties.length; i++) {
     acceptTx = await api.tx.childBounties.acceptCurator(
       parentBounty,
-      args['accept'] // Child Bounty
+      acceptBounties[i] // Child Bounty
     );
     batchArgs.push(acceptTx);
   }
 
   // Award Child Bounty
   let awardTx;
-  if (args['award']) {
+  for (let i = 0; i < awardBounties.length; i++) {
     awardTx = await api.tx.childBounties.awardChildBounty(
       parentBounty,
-      args['award'][0], // Child Bounty
-      args['award'][1] // Beneficiary
+      awardBounties[i], // Child Bounty
+      awardBeneficiary[i] // Beneficiary
     );
     batchArgs.push(awardTx);
   }
