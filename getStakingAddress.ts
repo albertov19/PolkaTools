@@ -8,7 +8,7 @@ import { hideBin } from 'yargs/helpers';
 import * as fs from 'fs';
 
 const argv = yargs(hideBin(process.argv)).options({
-  network: { type: 'string', demandOption: true, alias: 'n' },
+  network: { type: 'string', demandOption: true, alias: 'n', default: 'moonbeam' },
 }).argv;
 
 // Create Provider
