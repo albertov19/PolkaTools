@@ -21,7 +21,7 @@ if (argv['network'] === 'moonbeam') {
   wsParaProvider = new WsProvider('wss://wss.api.moonbeam.network');
   wsRelayprovider = new WsProvider('wss://polkadot-rpc.dwellir.com');
   paraID = 2004;
-  feeAmount = BigInt(1000000000);
+  feeAmount = BigInt(10000000000);
   refTime = BigInt(1000000000);
   proofSize = BigInt(128000);
 } else if (argv['network'] === 'moonriver') {
@@ -96,13 +96,7 @@ const main = async () => {
       {
         id: {
           parents: 0,
-          interior: {
-            X1: [
-              {
-                Parachain: 1000,
-              },
-            ],
-          },
+          interior: 'Here',
         },
         fun: {
           Fungible: balanceTransfer,
@@ -119,6 +113,10 @@ const main = async () => {
     'Unlimited'
   );
 
+  console.log(
+    (await relayTX.paymentInfo('5Ec4AhPZYgv9Q1KUajtv2RieJJmhPdn9cnvKxjpxuJHVoGFt')).toHuman()
+  );
+
   // Build Moonbeam/Moonriver Call
   const destPara = {
     V4: {
@@ -131,8 +129,8 @@ const main = async () => {
     destPara,
     null,
     {
-      ascurrencyid: {
-        currency: { ForeignAsset: '42259045809535163221576417993425387648' },
+      currency: {
+        AsCurrencyId: { ForeignAsset: '42259045809535163221576417993425387648' },
       },
       feeAmount: feeAmount,
     },
@@ -146,7 +144,7 @@ const main = async () => {
   );
 
   console.log(`Call to transfer ${argv['percent']}\% from ${argv['network']} to AH`);
-  console.log(paraTx.toHex());
+  console.log(paraTx.method.toHex());
   await apiPara.disconnect();
   await apiRelay.disconnect();
 };
