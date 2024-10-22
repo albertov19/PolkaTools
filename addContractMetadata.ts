@@ -4,6 +4,7 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 
 ts-node ./addContractMetadata.ts --c "0x452bE05439d83D3A6A510F11a4Ba1F1909d1cA6d,0x149f3dDeB5FF9bE7342D07C35D6dA19Df3F790af,0x3DD36E64784FDAEe7BD202c78322a0d8EB1BB32b"
 
+Network is optional, --n moonriver | --n moonbase default: moonbeam
 */
 
 import yargs from 'yargs';
