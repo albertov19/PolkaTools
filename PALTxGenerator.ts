@@ -8,9 +8,10 @@ import yargs from 'yargs';
 // Get input arguments
 const args = yargs.options({
   sender: { type: 'string', demandOption: true, alias: 's' },
-  propose: { type: 'array', demandOption: false }, // [Child Bounty, fee]
-  accept: { type: 'array', demandOption: false }, // Child Bounty
-  award: { type: 'array', demandOption: false }, // [Child Bounty, Beneficiary]
+  propose: { type: 'array', demandOption: false, coerce: (arg) => (arg ? [arg[0], arg[1]] : []) }, // [Child Bounty, fee]
+  accept: { type: 'array', demandOption: false, coerce: (arg) => (arg ? [arg[0]] : []) }, // Child Bounty
+  award: { type: 'array', demandOption: false, coerce: (arg) => (arg ? [arg[0], arg[1]] : []) }, // [Child Bounty, Beneficiary]
+  claim: { type: 'array', demandOption: false, coerce: (arg) => (arg ? [arg[0]] : []) }, // Child Bounty
   network: { type: 'string', demandOption: false, default: 'polkadot', alias: 'n' },
   chopsticks: { type: 'bolean', demandOption: false, nargs: 0 }, // Run Chopsticks Test at ws://localhost:8000
 }).argv;
@@ -55,11 +56,12 @@ const main = async () => {
   let batchArgs = [];
 
   // Split the string inputs by commas into arrays
-  const proposeBountiesID = args['propose'] ? args['propose'][0].split(',') : [];
-  const proposeBountiesFees = args['propose'] ? args['propose'][1].split(',') : [];
-  const acceptBounties = args['accept'] ? args['accept'][0].split(',') : [];
-  const awardBounties = args['award'] ? args['award'][0].split(',') : [];
-  const awardBeneficiary = args['award'] ? args['award'][1].split(',') : [];
+  const proposeBountiesID = args['propose'] ? [args['propose'][0]] : [];
+  const proposeBountiesFees = args['propose'] ? [args['propose'][1]] : [];
+  const acceptBounties = args['accept'] ? [args['accept'][0]] : [];
+  const awardBounties = args['award'] ? [args['award'][0]] : [];
+  const awardBeneficiary = args['award'] ? [args['award'][1]] : [];
+  const claimBounties = args['claim'] ? [args['claim'][0]] : [];
 
   // Check lengths
   if (
@@ -102,6 +104,16 @@ const main = async () => {
       awardBeneficiary[i] // Beneficiary
     );
     batchArgs.push(awardTx);
+  }
+
+  // Claim Child Bounty
+  let claimTx;
+  for (let i = 0; i < claimBounties.length; i++) {
+    claimTx = await api.tx.childBounties.claimChildBounty(
+      parentBounty,
+      awardBounties[i] // Child Bounty
+    );
+    batchArgs.push(claimTx);
   }
 
   // Batch Calls
