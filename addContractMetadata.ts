@@ -49,7 +49,7 @@ const main = async () => {
   }
 
   // Batch It
-  let batchTx = await api.tx.utility.batch(batchInner);
+  let batchTx = await api.tx.utility.forceBatch(batchInner);
 
   console.log(`Call add contract metadata`);
   console.log(batchTx.method.toHex());
