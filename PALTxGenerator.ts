@@ -55,23 +55,35 @@ const main = async () => {
   // Batch Tx
   let batchArgs = [];
 
-  // Split the string inputs by commas into arrays
-  const proposeBountiesID = args['propose']
-    ? args['propose'][0].split(',').map((value) => BigInt(value))
-    : [];
-  const proposeBountiesFees = args['propose']
-    ? args['propose'][1].split(',').map((value) => BigInt(value))
-    : [];
-  const acceptBounties = args['accept']
-    ? args['accept'][0].split(',').map((value) => BigInt(value))
-    : [];
-  const awardBounties = args['award']
-    ? args['award'][0].split(',').map((value) => BigInt(value))
-    : [];
-  const awardBeneficiary = args['award'] ? args['award'][1].split(',') : [];
-  const claimBounties = args['claim']
-    ? args['claim'][0].split(',').map((value) => BigInt(value))
-    : [];
+  // Split the string inputs by commas into arrays only if the argument is an array
+  const proposeBountiesID =
+    args['propose'] && Array.isArray(args['propose']) ? splitData(args['propose'][0]) : [];
+
+  const proposeBountiesFees =
+    args['propose'] && Array.isArray(args['propose']) ? splitData(args['propose'][1]) : [];
+
+  const acceptBounties =
+    args['accept'] && Array.isArray(args['accept']) ? splitData(args['accept'][0]) : [];
+
+  const awardBounties =
+    args['award'] && Array.isArray(args['award']) ? splitData(args['award'][0]) : [];
+
+  const awardBeneficiary =
+    args['award'] && Array.isArray(args['award'])
+      ? typeof args['award'][1] === 'string' && args['award'][1].includes(',')
+        ? args['award'][1].split(',')
+        : [args['award'][1]]
+      : [];
+
+  const claimBounties =
+    args['claim'] && Array.isArray(args['claim']) ? splitData(args['claim'][0]) : [];
+
+  console.log(`Proposing curator for child bounties ${proposeBountiesID}`);
+  console.log(`Setting child bounties fee for curator as ${proposeBountiesFees}`);
+  console.log(`Accepting child bounties ${acceptBounties}`);
+  console.log(`Awarding child bounties ${awardBounties}`);
+  console.log(`Awarding addresses are ${awardBeneficiary}`);
+  console.log(`Claiming child bounties ${claimBounties}`);
 
   // Check lengths
   if (
@@ -176,6 +188,14 @@ const main = async () => {
   }
 
   await api.disconnect();
+};
+
+const splitData = (arg) => {
+  if (typeof arg === 'string') {
+    return arg.includes(',') ? arg.split(',').map((value) => BigInt(value)) : [BigInt(arg)];
+  }
+  // If the argument is already a number or BigInt, return it as an array
+  return [BigInt(arg)];
 };
 
 main();
