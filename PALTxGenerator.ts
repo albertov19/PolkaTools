@@ -8,10 +8,10 @@ import yargs from 'yargs';
 // Get input arguments
 const args = yargs.options({
   sender: { type: 'string', demandOption: true, alias: 's' },
-  propose: { type: 'array', demandOption: false, coerce: (arg) => (arg ? [arg[0], arg[1]] : []) }, // [Child Bounty, fee]
-  accept: { type: 'array', demandOption: false, coerce: (arg) => (arg ? [arg[0]] : []) }, // Child Bounty
-  award: { type: 'array', demandOption: false, coerce: (arg) => (arg ? [arg[0], arg[1]] : []) }, // [Child Bounty, Beneficiary]
-  claim: { type: 'array', demandOption: false, coerce: (arg) => (arg ? [arg[0]] : []) }, // Child Bounty
+  propose: { type: 'array', demandOption: false }, // [Child Bounty, fee]
+  accept: { type: 'array', demandOption: false }, // Child Bounty
+  award: { type: 'array', demandOption: false }, // [Child Bounty, Beneficiary]
+  claim: { type: 'array', demandOption: false }, // Child Bounty
   network: { type: 'string', demandOption: false, default: 'polkadot', alias: 'n' },
   chopsticks: { type: 'bolean', demandOption: false, nargs: 0 }, // Run Chopsticks Test at ws://localhost:8000
 }).argv;
@@ -56,12 +56,22 @@ const main = async () => {
   let batchArgs = [];
 
   // Split the string inputs by commas into arrays
-  const proposeBountiesID = args['propose'] ? [args['propose'][0]] : [];
-  const proposeBountiesFees = args['propose'] ? [args['propose'][1]] : [];
-  const acceptBounties = args['accept'] ? [args['accept'][0]] : [];
-  const awardBounties = args['award'] ? [args['award'][0]] : [];
-  const awardBeneficiary = args['award'] ? [args['award'][1]] : [];
-  const claimBounties = args['claim'] ? [args['claim'][0]] : [];
+  const proposeBountiesID = args['propose']
+    ? args['propose'][0].split(',').map((value) => BigInt(value))
+    : [];
+  const proposeBountiesFees = args['propose']
+    ? args['propose'][1].split(',').map((value) => BigInt(value))
+    : [];
+  const acceptBounties = args['accept']
+    ? args['accept'][0].split(',').map((value) => BigInt(value))
+    : [];
+  const awardBounties = args['award']
+    ? args['award'][0].split(',').map((value) => BigInt(value))
+    : [];
+  const awardBeneficiary = args['award'] ? args['award'][1].split(',') : [];
+  const claimBounties = args['claim']
+    ? args['claim'][0].split(',').map((value) => BigInt(value))
+    : [];
 
   // Check lengths
   if (
