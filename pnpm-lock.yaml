@@ -15,7 +15,7 @@ importers:
     dependencies:
       '@acala-network/chopsticks-utils':
         specifier: ^0.13.1
-        version: 0.13.1(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(ts-node@10.9.2(@types/node@20.14.11)(typescript@4.9.5))
+        version: 0.13.1(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(ts-node@10.9.2(@types/node@22.7.9)(typescript@4.9.5))
       '@moonbeam-network/api-augment':
         specifier: ^0.2700.0
         version: 0.2700.0
@@ -37,9 +37,15 @@ importers:
       '@polkadot/util-crypto':
         specifier: 13.0.2
         version: 13.0.2(@polkadot/util@13.0.2)
+      '@types/bn.js':
+        specifier: ^5.1.6
+        version: 5.1.6
+      '@types/node':
+        specifier: ^22.7.9
+        version: 22.7.9
       ts-node:
         specifier: ^10.4.0
-        version: 10.9.2(@types/node@20.14.11)(typescript@4.9.5)
+        version: 10.9.2(@types/node@22.7.9)(typescript@4.9.5)
       typescript:
         specifier: ^4.5.4
         version: 4.9.5
@@ -327,11 +333,11 @@ packages:
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
 
-  '@types/bn.js@5.1.5':
-    resolution: {integrity: sha512-V46N0zwKRF5Q00AZ6hWtN0T8gGmDUaUzLWQvHFo5yThtVwK/VCenFY3wXVbOvNfajEpsTfQM4IN9k/d6gUVX3A==}
+  '@types/bn.js@5.1.6':
+    resolution: {integrity: sha512-Xh8vSwUeMKeYYrj3cX4lGQgFSF/N03r+tv4AiLl1SucqV+uTQpxRcnM8AkXKHwYP9ZPXOYXRr2KPXpVlIvqh9w==}
 
-  '@types/node@20.14.11':
-    resolution: {integrity: sha512-kprQpL8MMeszbz6ojB5/tU8PLN4kesnN8Gjzw349rDlNgsSzg90lAVj3llK99Dh7JON+t9AuscPPFW6mPbTnSA==}
+  '@types/node@22.7.9':
+    resolution: {integrity: sha512-jrTfRC7FM6nChvU7X2KqcrgquofrWLFDeYC1hKfwNWomVvrn7JIksqf344WN2X/y8xrgqBd2dJATZV4GbatBfg==}
 
   abbrev@1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
@@ -826,6 +832,7 @@ packages:
     resolution: {integrity: sha512-Quz3MvAwHxVYNXsOByL7xI5EB2WYOeFswqaHIA3qOK3isRWTxiplBEocmmru6XmxDB2L7jDNYtYA4FyimoAFEw==}
     engines: {node: '>=8.17.0'}
     hasBin: true
+    bundledDependencies: []
 
   lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
@@ -1339,8 +1346,8 @@ packages:
     engines: {node: '>=4.2.0'}
     hasBin: true
 
-  undici-types@5.26.5:
-    resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
+  undici-types@6.19.8:
+    resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
 
   unique-filename@1.1.1:
     resolution: {integrity: sha512-Vmp0jIp2ln35UTXuryvjzkjGdRyf9b2lTXuSYUiPmzRcl3FDtYqAwOnTJkAngD9SWhnoJzDbTKwaOrZ+STtxNQ==}
@@ -1447,13 +1454,13 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@acala-network/chopsticks-db@0.13.1(ts-node@10.9.2(@types/node@20.14.11)(typescript@4.9.5))':
+  '@acala-network/chopsticks-db@0.13.1(ts-node@10.9.2(@types/node@22.7.9)(typescript@4.9.5))':
     dependencies:
       '@acala-network/chopsticks-core': 0.13.1
       '@polkadot/util': 13.0.2
       idb: 8.0.0
       sqlite3: 5.1.7
-      typeorm: 0.3.20(sqlite3@5.1.7)(ts-node@10.9.2(@types/node@20.14.11)(typescript@4.9.5))
+      typeorm: 0.3.20(sqlite3@5.1.7)(ts-node@10.9.2(@types/node@22.7.9)(typescript@4.9.5))
     transitivePeerDependencies:
       - '@google-cloud/spanner'
       - '@sap/hana-client'
@@ -1481,9 +1488,9 @@ snapshots:
       '@polkadot/util': 13.0.2
       '@polkadot/wasm-util': 7.3.2(@polkadot/util@13.0.2)
 
-  '@acala-network/chopsticks-utils@0.13.1(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(ts-node@10.9.2(@types/node@20.14.11)(typescript@4.9.5))':
+  '@acala-network/chopsticks-utils@0.13.1(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(ts-node@10.9.2(@types/node@22.7.9)(typescript@4.9.5))':
     dependencies:
-      '@acala-network/chopsticks': 0.13.1(ts-node@10.9.2(@types/node@20.14.11)(typescript@4.9.5))
+      '@acala-network/chopsticks': 0.13.1(ts-node@10.9.2(@types/node@22.7.9)(typescript@4.9.5))
       '@polkadot/api': 12.2.1
       '@polkadot/api-base': 12.2.1
       '@polkadot/keyring': 13.0.2(@polkadot/util-crypto@13.0.2(@polkadot/util@13.0.2))(@polkadot/util@13.0.2)
@@ -1513,10 +1520,10 @@ snapshots:
       - typeorm-aurora-data-api-driver
       - utf-8-validate
 
-  '@acala-network/chopsticks@0.13.1(ts-node@10.9.2(@types/node@20.14.11)(typescript@4.9.5))':
+  '@acala-network/chopsticks@0.13.1(ts-node@10.9.2(@types/node@22.7.9)(typescript@4.9.5))':
     dependencies:
       '@acala-network/chopsticks-core': 0.13.1
-      '@acala-network/chopsticks-db': 0.13.1(ts-node@10.9.2(@types/node@20.14.11)(typescript@4.9.5))
+      '@acala-network/chopsticks-db': 0.13.1(ts-node@10.9.2(@types/node@22.7.9)(typescript@4.9.5))
       '@pnpm/npm-conf': 2.2.2
       '@polkadot/api': 12.2.1
       '@polkadot/api-augment': 12.2.1
@@ -1840,7 +1847,7 @@ snapshots:
       '@polkadot/x-global': 13.0.2
       '@polkadot/x-textdecoder': 13.0.2
       '@polkadot/x-textencoder': 13.0.2
-      '@types/bn.js': 5.1.5
+      '@types/bn.js': 5.1.6
       bn.js: 5.2.1
       tslib: 2.6.3
 
@@ -1975,13 +1982,13 @@ snapshots:
 
   '@tsconfig/node16@1.0.4': {}
 
-  '@types/bn.js@5.1.5':
+  '@types/bn.js@5.1.6':
     dependencies:
-      '@types/node': 20.14.11
+      '@types/node': 22.7.9
 
-  '@types/node@20.14.11':
+  '@types/node@22.7.9':
     dependencies:
-      undici-types: 5.26.5
+      undici-types: 6.19.8
 
   abbrev@1.1.1:
     optional: true
@@ -2996,14 +3003,14 @@ snapshots:
     dependencies:
       real-require: 0.2.0
 
-  ts-node@10.9.2(@types/node@20.14.11)(typescript@4.9.5):
+  ts-node@10.9.2(@types/node@22.7.9)(typescript@4.9.5):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.4
-      '@types/node': 20.14.11
+      '@types/node': 22.7.9
       acorn: 8.12.1
       acorn-walk: 8.3.3
       arg: 4.1.3
@@ -3022,7 +3029,7 @@ snapshots:
 
   type-fest@0.13.1: {}
 
-  typeorm@0.3.20(sqlite3@5.1.7)(ts-node@10.9.2(@types/node@20.14.11)(typescript@4.9.5)):
+  typeorm@0.3.20(sqlite3@5.1.7)(ts-node@10.9.2(@types/node@22.7.9)(typescript@4.9.5)):
     dependencies:
       '@sqltools/formatter': 1.2.5
       app-root-path: 3.1.0
@@ -3041,13 +3048,13 @@ snapshots:
       yargs: 17.7.2
     optionalDependencies:
       sqlite3: 5.1.7
-      ts-node: 10.9.2(@types/node@20.14.11)(typescript@4.9.5)
+      ts-node: 10.9.2(@types/node@22.7.9)(typescript@4.9.5)
     transitivePeerDependencies:
       - supports-color
 
   typescript@4.9.5: {}
 
-  undici-types@5.26.5: {}
+  undici-types@6.19.8: {}
 
   unique-filename@1.1.1:
     dependencies:
