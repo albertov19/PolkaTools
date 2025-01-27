@@ -33,12 +33,16 @@ const main = async () => {
   // Get list of votes
   const votes = await api.query.convictionVoting.votingFor.entries(argv['sender']);
 
+  console.log(votes.length);
+
   let votesInfo = [];
 
   votes.forEach(([key, exposure]: any | any) => {
     votesInfo.push({
       info: key.args.map((k) => k.toHuman()),
-      details: exposure.toHuman().Casting.votes,
+      details: exposure.toHuman().Casting
+        ? exposure.toHuman().Casting.votes
+        : exposure.toHuman().Casting,
     });
   });
 
