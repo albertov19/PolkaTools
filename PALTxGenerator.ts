@@ -13,7 +13,7 @@ const args = yargs.options({
   award: { type: 'array', demandOption: false }, // [Child Bounty, Beneficiary]
   claim: { type: 'array', demandOption: false }, // Child Bounty
   network: { type: 'string', demandOption: false, default: 'polkadot', alias: 'n' },
-  chopsticks: { type: 'bolean', demandOption: false, nargs: 0 }, // Run Chopsticks Test at ws://localhost:8000
+  chopsticks: { type: 'bolean', demandOption: false, nargs: 0, alias: 'c' }, // Run Chopsticks Test at ws://localhost:8000
 }).argv;
 
 // PAL Config
@@ -24,7 +24,6 @@ const signatories = sortAddresses([
   '1brScQ9KDuFB2EsBc93smHY5T464gjWzzvtnJbBwKofTqad',
   '15BERoWxrWC61cAb4JjpUdM7sy8FAS9uduismDbZ7PURZLto',
   '15aSnCUARuwBoLYn6nkFj5ap2DUfRmKcXJaAotfVwvVQxNK3',
-  '13zU1pipCuijDA1eWdHPnDgEHh3BvDJ9GsPMMFFvE5p6GF4D',
   '16AhqStFQa8GrffE7WapHrUQ29dmioZHuwFTn4z9fQ7WBGBZ',
 ]);
 
