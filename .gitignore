@@ -3,3 +3,5 @@ file_name.json
 accounts.json
 *rewards_addresses.json
 *staking_addresses.json
+moonriver*.json
+moonbeam*.json

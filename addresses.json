@@ -1,0 +1,10 @@
+{
+  "moonbeam": [
+    "0xbc7Ce80a47ccc70EEDb84267E9F0B9678F5A0c8b",
+    "0x09e1c9146394DFF44eaab37381d34251ed86fCdd"
+  ],
+  "moonriver": [
+    "0xbc7Ce80a47ccc70EEDb84267E9F0B9678F5A0c8b",
+    "0x09e1c9146394DFF44eaab37381d34251ed86fCdd"
+  ]
+}
