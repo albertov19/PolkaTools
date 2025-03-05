@@ -48,10 +48,13 @@ const main = async () => {
   for (let address of addressesArray['moonbeam']) {
     const balance = (await apiAt.query.system.account(address)).toHuman() as any;
 
-    // Convert balance from WEI to blockchain tokens
-    const realBalance = (
-      BigInt(balance.data.free.replaceAll(',', '')) / BigInt(10 ** 18)
+    // Get reserved and free balanace at a given block
+    let realBalance = (
+      (BigInt(balance.data.free.replaceAll(',', '')) +
+        BigInt(balance.data.reserved.replaceAll(',', ''))) /
+      BigInt(10 ** 16)
     ).toString();
+    realBalance = realBalance.slice(0, -2) + '.' + realBalance.slice(-2);
     results.push({
       network: network,
       date: new Date(Number(time.replaceAll(',', ''))),
@@ -59,6 +62,8 @@ const main = async () => {
       balance: realBalance,
     });
   }
+
+  console.log(results);
 
   // Save data to JSON file
   const dataJSON = JSON.stringify(results, null, 2);
