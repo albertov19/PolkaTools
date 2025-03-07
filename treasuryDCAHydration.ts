@@ -8,24 +8,23 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { u8aToHex } from '@polkadot/util';
 
 // Input Data
-const transferAmount = '100000000000000000000000';
+const transferAmount = BigInt('100000000000000000000000');
 const wsHydraProvider = 'wss://hydradx-rpc.dwellir.com';
 const wsMoonbeamProvider = 'wss://wss.api.moonbeam.network';
 // XCM Transactor Config
-const feeAmount = '2000000000000000000';
-const refTime = '3000000000';
-const proofSize = '100000';
+const feeAmount = BigInt('3000000000000000000');
+const refTime = BigInt('7000000000'); // For XCM Transact
+const proofSize = BigInt('150000'); // For XCM Transact
 // DCA Config
-const dcaPeriod = 1; // N of blocks between trades (12 or 6 seconds)
+const dcaPeriod = 6; // N of blocks between trades (12 or 6 seconds)
 const dcaTotalAmount = transferAmount; // Total amount to trade in the entire DCA
-const dcaMaxRetries = 9; // Amount of times that the schedule will be retried before it cancels
-const dcaSlippage = 15000; // Slippage tolerance for the DCA in permill
-const dcaOrderType = 'Buy'; // Buy an assetOut or Sell an assetIn
+const dcaMaxRetries = BigInt(9); // Amount of times that the schedule will be retried before it cancels
+const dcaSlippage = BigInt('15000'); // Slippage tolerance for the DCA in permill
+let dcaOrderType: 'Buy' | 'Sell' = 'Buy'; // Buy an assetOut or Sell an assetIn
 const dcaAssetIn = 16; // GLMR asset ID
 const dcaAssetOut = [10, 22]; // USDT/USDC asset ID (USDT = 10, USDC = 22)
-const dcaAmount = '250000000'; // Amount of each trade (depends in/out on Buy/Sell)
-const dcaMaxAmount = '5000000000000000000000'; // Max amount of each trade (depends in/out on Buy/Sell)
-const dcaPool = 'Omnipool'; // Route to use for the DCA (Omnipool, Stableswap, XYK)
+const dcaAmount = BigInt('250000000'); // Amount of each trade (depends in/out on Buy/Sell)
+const dcaMinTokenPrice = BigInt('5'); // Cents of a dollar - min price of the token to trade in
 
 // Treasury Account Moonbeam
 const treasuryAccount = u8aToHex(
@@ -58,13 +57,11 @@ const transferTreasuryFunds = async (api, sovereignAccount, targetParaId) => {
     V4: [
       {
         id: {
-          V4: {
-            parents: 0,
-            interior: { X1: [{ PalletInstance: 10 }] },
-          },
+          parents: 0,
+          interior: { X1: [{ PalletInstance: 10 }] },
         },
         fun: {
-          Fungible: { amount: transferAmount },
+          Fungible: { amount: transferAmount + feeAmount },
         },
       },
     ],
@@ -84,75 +81,90 @@ const transferTreasuryFunds = async (api, sovereignAccount, targetParaId) => {
     calldata
   );
 
-  console.log(`Moonbeam Treasury Transfer\n${dispatchAsTx.toHex()}\n`);
+  console.log(`Moonbeam Treasury Transfer\n${dispatchAsTx.method.toHex()}\n`);
 
   return dispatchAsTx;
 };
 
 // Hydration DCA Call
 const createDCACall = async (api, sovereigAccount) => {
-  let batchTxs = [];
+  let dcaTxs = [];
 
   for (let i = 0; i < dcaAssetOut.length; i++) {
+    let call;
+
+    // Get Asset In/Out Decimals
+    const assetInDecimals = BigInt(
+      (await api.query.assetRegistry.assets(dcaAssetIn)).toJSON().decimals
+    );
+    const assetOutDecimals = BigInt(
+      (await api.query.assetRegistry.assets(dcaAssetOut[i])).toJSON().decimals
+    );
+
     if (dcaOrderType === 'Buy') {
-      batchTxs.push(
-        await api.tx.dca.schedule(
-          {
-            owner: sovereigAccount,
-            period: dcaPeriod,
-            totalAmount: dcaTotalAmount,
-            maxRetries: dcaMaxRetries,
-            stabilityThreshold: null,
-            slippage: dcaSlippage,
-            order: {
-              Buy: {
-                assetIn: dcaAssetIn,
-                assetOut: dcaAssetOut[i],
-                amountOut: dcaAmount,
-                maxAmountIn: dcaMaxAmount,
-                route: [{ pool: dcaPool, assetIn: dcaAssetIn, assetOut: dcaAssetOut[i] }],
-              },
+      // Get the max amount of the token to trade in
+      const dcaMaxAmountIn =
+        (dcaAmount / dcaMinTokenPrice) *
+        BigInt(100) *
+        BigInt(10) ** (assetInDecimals - assetOutDecimals); // Price is in cents
+
+      call = await api.tx.dca.schedule(
+        {
+          owner: sovereigAccount,
+          period: dcaPeriod,
+          totalAmount: dcaTotalAmount / BigInt(dcaAssetOut.length),
+          maxRetries: dcaMaxRetries,
+          stabilityThreshold: null,
+          slippage: dcaSlippage,
+          order: {
+            Buy: {
+              assetIn: dcaAssetIn,
+              assetOut: dcaAssetOut[i],
+              amountOut: dcaAmount,
+              maxAmountIn: dcaMaxAmountIn,
+              route: null,
             },
           },
-          null
-        )
+        },
+        null
       );
     } else if (dcaOrderType === 'Sell') {
-      batchTxs.push(
-        await api.tx.dca.schedule(
-          {
-            owner: sovereigAccount,
-            period: dcaPeriod,
-            totalAmount: dcaTotalAmount,
-            maxRetries: dcaMaxRetries,
-            stabilityThreshold: null,
-            slippage: dcaSlippage,
-            order: {
-              Sell: {
-                assetIn: dcaAssetIn,
-                assetOut: dcaAssetOut[i],
-                amountIn: dcaAmount,
-                maxAmountOut: dcaMaxAmount,
-                route: [{ pool: dcaPool, assetIn: dcaAssetIn, assetOut: dcaAssetOut[i] }],
-              },
+      // Get the max amount of the token to trade out
+      const dcaMinAmountOut =
+        (dcaAmount * dcaMinTokenPrice) /
+        (BigInt(100) * BigInt(10) ** (assetInDecimals - assetOutDecimals)); // Price is in cents
+
+      call = await api.tx.dca.schedule(
+        {
+          owner: sovereigAccount,
+          period: dcaPeriod,
+          totalAmount: dcaTotalAmount / BigInt(dcaAssetOut.length),
+          maxRetries: dcaMaxRetries,
+          stabilityThreshold: null,
+          slippage: dcaSlippage,
+          order: {
+            Sell: {
+              assetIn: dcaAssetIn,
+              assetOut: dcaAssetOut[i],
+              amountIn: dcaAmount,
+              minAmountOut: dcaMinAmountOut,
+              route: null,
             },
           },
-          null
-        )
+        },
+        null
       );
     }
+    dcaTxs.push(call.method.toHex());
+
+    console.log(`Hydration DCA Call #${i + 1}\n${call.method.toHex()}\n`);
   }
 
-  // Batch all DCA schedules
-  const batchCall = await api.tx.utility.batch(batchTxs);
-
-  console.log(`Hydration DCA Call\n${batchCall.method.toHex()}\n`);
-
-  return batchCall.method.toHex();
+  return dcaTxs;
 };
 
 // XCM Transactor Moonbeam Call
-const createXCMTransactor = async (api, targetParaId, dcaCall) => {
+const createXCMTransactor = async (api, targetParaId, dcaCalls) => {
   const dest = {
     V4: {
       parents: 1,
@@ -160,27 +172,54 @@ const createXCMTransactor = async (api, targetParaId, dcaCall) => {
     },
   };
 
-  let calldata = await api.tx.xcmTransactor.transactThroughSovereign(
-    dest,
-    null,
-    {
-      currency: {
-        AsCurrencyId: 'SelfReserve',
+  let xcmTransactorCalls = [];
+
+  for (let i = 0; i < dcaCalls.length; i++) {
+    const call = await api.tx.xcmTransactor.transactThroughSovereign(
+      dest,
+      null,
+      {
+        currency: {
+          AsCurrencyId: 'SelfReserve',
+        },
+        feeAmount: feeAmount / BigInt(dcaCalls.length),
       },
-      feeAmount: feeAmount,
-    },
-    dcaCall,
-    'SovereignAccount',
-    {
-      transactRequiredWeightAtMost: { refTime: refTime, proofSize: proofSize },
-      overallWeight: 'Unlimited',
-    },
-    true
-  );
+      dcaCalls[i],
+      'SovereignAccount',
+      {
+        transactRequiredWeightAtMost: { refTime: refTime, proofSize: proofSize },
+        overallWeight: 'Unlimited',
+      },
+      true
+    );
+    xcmTransactorCalls.push(call.method.toHex());
 
-  console.log(`XCM Transactor Moonbeam DCA Call\n${calldata.toHex()}\n`);
+    console.log(`XCM Transactor Moonbeam DCA Call #${i + 1}\n${call.method.toHex()}\n`);
+  }
 
-  return calldata;
+  return xcmTransactorCalls;
+};
+
+// Wrap Calls with Scheduler
+const wrapCalls = async (api, xcmTransactorCalls) => {
+  let wrapCalls = [];
+
+  // Chains are in different block times
+  // We ensure that the calls are executed at least 3 blocks apart
+  for (let i = 0; i < xcmTransactorCalls.length; i++) {
+    const call = await api.tx.scheduler.scheduleAfter(
+      1 + (4 ** i - 1),
+      null,
+      0,
+      xcmTransactorCalls[i]
+    );
+
+    wrapCalls.push(call.method.toHex());
+
+    console.log(`Moonbeam Scheduler Call #${i + 1}\n${call.method.toHex()}\n`);
+  }
+
+  return wrapCalls;
 };
 
 const calculateSovAddress = async (paraId) => {
@@ -218,16 +257,19 @@ const main = async () => {
   const trasferBytes = await transferTreasuryFunds(apiMoonbeam, sovereigAccount, hydrationParaId);
 
   // Create Hydration Call
-  const dcaCall = await createDCACall(apiHydra, sovereigAccount);
+  const dcaCalls = await createDCACall(apiHydra, sovereigAccount);
 
   // Create XCM Transactor With Hydration Call Bytes
-  const xcmTransactorBytes = await createXCMTransactor(apiMoonbeam, hydrationParaId, dcaCall);
+  const xcmTransactorBytes = await createXCMTransactor(apiMoonbeam, hydrationParaId, dcaCalls);
+
+  // Wrap XCM Transactor Calls with Scheduler
+  const wrappedXcmBytes = await wrapCalls(apiMoonbeam, xcmTransactorBytes);
 
   // Batch Both Treasury and XCM Transactor Calls
-  const batchTxs = [trasferBytes, xcmTransactorBytes];
+  const batchTxs = [trasferBytes, ...wrappedXcmBytes];
   const batchCall = await apiMoonbeam.tx.utility.batch(batchTxs);
 
-  console.log(`Moonbeam Batch Call\n${batchCall.toHex()}\n`);
+  console.log(`Moonbeam Batch Call\n${batchCall.method.toHex()}\n`);
 };
 
 main()
