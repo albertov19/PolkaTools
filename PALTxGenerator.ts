@@ -52,7 +52,7 @@ const main = async () => {
   await api.isReady;
 
   // Batch Tx
-  let batchArgs = [];
+  let batchArgs = [] as any;
 
   // Split the string inputs by commas into arrays only if the argument is an array
   const proposeBountiesID =
