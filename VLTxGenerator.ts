@@ -7,11 +7,12 @@ import yargs from 'yargs';
 
 // Get input arguments
 const args = yargs.options({
-  sender: { type: 'string', demandOption: true, alias: 's' },
-  propose: { type: 'array', demandOption: false }, // Child Bounty
-  accept: { type: 'array', demandOption: false }, // Child Bounty
-  award: { type: 'array', demandOption: false }, // [Child Bounty, Beneficiary]
-  claim: { type: 'array', demandOption: false }, // Child Bounty
+  childBounties: { type: 'array', demandOption: true }, // [Child Bounty IDs]
+  beneficiaries: { type: 'array', demandOption: false }, // [Beneficiary Addresses]
+  propose: { type: 'bolean', demandOption: false, nargs: 0 }, // Propose curator
+  accept: { type: 'bolean', demandOption: false, nargs: 0 }, // Accept curator
+  award: { type: 'bolean', demandOption: false, nargs: 0 }, // Award child bounty
+  claim: { type: 'array', demandOption: false }, // Claim child bounty
   network: { type: 'string', demandOption: false, default: 'polkadot', alias: 'n' },
   chopsticks: { type: 'bolean', demandOption: false, nargs: 0, alias: 'c' }, // Run Chopsticks Test at ws://localhost:8000
 }).argv;
@@ -56,79 +57,78 @@ const main = async () => {
   let batchArgs = [];
 
   // Split the string inputs by commas into arrays only if the argument is an array
-  const proposeBountiesID =
-    args['propose'] && Array.isArray(args['propose']) ? splitData(args['propose'][0]) : [];
-
-  const acceptBounties =
-    args['accept'] && Array.isArray(args['accept']) ? splitData(args['accept'][0]) : [];
-
-  const awardBounties =
-    args['award'] && Array.isArray(args['award']) ? splitData(args['award'][0]) : [];
-
-  const awardBeneficiary =
-    args['award'] && Array.isArray(args['award'])
-      ? typeof args['award'][1] === 'string' && args['award'][1].includes(',')
-        ? args['award'][1].split(',')
-        : [args['award'][1]]
+  const childBounties =
+    args['childBounties'] && Array.isArray(args['childBounties'])
+      ? splitData(args['childBounties'][0])
       : [];
 
-  const claimBounties =
-    args['claim'] && Array.isArray(args['claim']) ? splitData(args['claim'][0]) : [];
+  const beneficiaries =
+    args['beneficiaries'] && Array.isArray(args['beneficiaries'])
+      ? args['beneficiaries'][0].split(',')
+      : [];
 
-  console.log(`Proposing curator for child bounties ${proposeBountiesID}`);
-  console.log(`Accepting child bounties ${acceptBounties}`);
-  console.log(`Awarding child bounties ${awardBounties}`);
-  console.log(`Awarding addresses are ${awardBeneficiary}`);
-  console.log(`Claiming child bounties ${claimBounties}`);
-
-  // Check lengths
-  if (awardBounties.length !== awardBeneficiary.length) {
-    throw new Error(
-      'The size of propose bounties and fees, or award bounties and award beneficiaries must be the same.'
-    );
+  // Check inputs
+  if (childBounties.length !== beneficiaries.length) {
+    throw new Error('The size of child bounties and beneficiaries must be the same.');
+  }
+  if (
+    (args['propose'] || args['accept'] || args['award'] || args['claim']) &&
+    childBounties.length === 0
+  ) {
+    throw new Error('Child bounties are required for proposing curator.');
+  }
+  if (args['award'] && beneficiaries.length === 0) {
+    throw new Error('Beneficiaries are required for awarding child bounties.');
   }
 
-  // Propose Curator
-  let proposeTx;
-  for (let i = 0; i < proposeBountiesID.length; i++) {
-    proposeTx = await api.tx.childBounties.proposeCurator(
-      parentBounty,
-      proposeBountiesID[i], // Child Bounty
-      vlCurator,
-      0
-    );
-    batchArgs.push(proposeTx);
-  }
+  for (let i = 0; i < childBounties.length; i++) {
+    // Propose Curator
+    if (args['propose']) {
+      let proposeTx;
 
-  // Accept Curator
-  let acceptTx;
-  for (let i = 0; i < acceptBounties.length; i++) {
-    acceptTx = await api.tx.childBounties.acceptCurator(
-      parentBounty,
-      acceptBounties[i] // Child Bounty
-    );
-    batchArgs.push(acceptTx);
-  }
+      console.log(`Proposing curator for child bounties ${childBounties[i]}`);
+      proposeTx = await api.tx.childBounties.proposeCurator(
+        parentBounty,
+        childBounties[i], // Child Bounty
+        vlCurator,
+        0
+      );
+      batchArgs.push(proposeTx);
+    }
 
-  // Award Child Bounty
-  let awardTx;
-  for (let i = 0; i < awardBounties.length; i++) {
-    awardTx = await api.tx.childBounties.awardChildBounty(
-      parentBounty,
-      awardBounties[i], // Child Bounty
-      awardBeneficiary[i] // Beneficiary
-    );
-    batchArgs.push(awardTx);
-  }
+    // Accept Curator
+    if (args['accept']) {
+      console.log(`Accepting curator for child bounties ${childBounties[i]}`);
+      let acceptTx;
+      acceptTx = await api.tx.childBounties.acceptCurator(
+        parentBounty,
+        childBounties[i] // Child Bounty
+      );
+      batchArgs.push(acceptTx);
+    }
 
-  // Claim Child Bounty
-  let claimTx;
-  for (let i = 0; i < claimBounties.length; i++) {
-    claimTx = await api.tx.childBounties.claimChildBounty(
-      parentBounty,
-      awardBounties[i] // Child Bounty
-    );
-    batchArgs.push(claimTx);
+    // Award Child Bounty
+    if (args['award']) {
+      console.log(`Awarding child bounties ${childBounties[i]}`);
+      let awardTx = await api.tx.childBounties.awardChildBounty(
+        parentBounty,
+        childBounties[i], // Child Bounty
+        beneficiaries[i] // Beneficiary
+      );
+
+      batchArgs.push(awardTx);
+    }
+
+    // Claim Child Bounty
+
+    if (args['claim']) {
+      console.log(`Claiming child bounties ${childBounties[i]}`);
+      let claimTx = await api.tx.childBounties.claimChildBounty(
+        parentBounty,
+        childBounties[i] // Child Bounty
+      );
+      batchArgs.push(claimTx);
+    }
   }
 
   // Batch Calls
@@ -148,7 +148,7 @@ const main = async () => {
   let multisigTx = await api.tx.multisig.asMulti(
     threshold,
     signatories.filter(
-      (input) => u8aToHex(decodeAddress(input)) !== u8aToHex(decodeAddress(args['sender']))
+      (input) => u8aToHex(decodeAddress(input)) !== u8aToHex(decodeAddress(beneficiaries[0]))
     ),
     null,
     proxyTx,
