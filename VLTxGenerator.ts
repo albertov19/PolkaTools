@@ -80,9 +80,6 @@ const childBountyAmounts =
 const childBountyDescriptions =
   args['add'] && Array.isArray(args['add']) ? splitData(args['add'][1]) : [];
 
-console.log(childBountyAmounts);
-console.log(childBountyDescriptions);
-
 // Check inputs
 if (childBounties.length === 0 && !args['add']) {
   throw new Error('You must pass child bounties ID unless you are just adding it.');
