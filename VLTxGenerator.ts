@@ -21,9 +21,9 @@ const args = yargs.options({
 // VL Config
 const threshold = 4;
 const signatories = sortAddresses([
+  '12xi27tWkBPdRi147GrV4BM5PmHPA7vSEPvWKU7v95p7h3yL',
   '1HGnvAkk9nbfZ58CzUJhjcrLdEDMkr5qNkqqYkyD5BF5v6Y',
   '12m16pNVG4QKDsr3d9hA1TMjNhSxdQaztqZ5jMC86HLba1Qw',
-  '12xi27tWkBPdRi147GrV4BM5PmHPA7vSEPvWKU7v95p7h3yL',
   '14DsLzVyTUTDMm2eP3czwPbH53KgqnQRp3CJJZS9GR7yxGDP',
   '13gjthPeadKaZQChaGfXthNe52oErZVgUGt78W3oU7rE5Pmn',
   '14hBq9aMgvdM7nLhG6b3XvRhwfxqwEmY7MhwiXmfkbrV9xna',
