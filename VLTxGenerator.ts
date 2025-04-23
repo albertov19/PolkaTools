@@ -186,7 +186,7 @@ const main = async () => {
   }
 
   // Final Call
-  let batchTx = batchArgs.length > 1 ? await api.tx.utility.batch(batchArgs) : batchArgs[0];
+  let batchTx = batchArgs.length > 1 ? await api.tx.utility.batchAll(batchArgs) : batchArgs[0];
 
   console.log(`\Tx for Chopsticks Test ${batchTx.toHex()}\n`);
 
