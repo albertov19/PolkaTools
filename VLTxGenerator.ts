@@ -1,5 +1,5 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { cryptoWaitReady, sortAddresses, decodeAddress } from '@polkadot/util-crypto';
+import { cryptoWaitReady, sortAddresses, decodeAddress, blake2AsHex } from '@polkadot/util-crypto';
 import { u8aToHex } from '@polkadot/util';
 import { signFakeWithApi } from '@acala-network/chopsticks-utils';
 
@@ -7,8 +7,9 @@ import yargs from 'yargs';
 
 // Get input arguments
 const args = yargs.options({
-  childBounties: { type: 'array', demandOption: true }, // [Child Bounty IDs]
+  childBounties: { type: 'array', demandOption: false }, // [Child Bounty IDs]
   beneficiaries: { type: 'array', demandOption: false }, // [Beneficiary Addresses]
+  add: { type: 'array', demandOption: false, nargs: 0 }, // [Value Description]
   propose: { type: 'bolean', demandOption: false, nargs: 0 }, // Propose curator
   accept: { type: 'bolean', demandOption: false, nargs: 0 }, // Accept curator
   award: { type: 'bolean', demandOption: false, nargs: 0 }, // Award child bounty
@@ -34,6 +35,74 @@ const vlCurator = '14Gvqxjvy2rKFnY5BobiNq4ZsmbsHnnhZy1SqwZb3nhh3mLE';
 const reftime = 300000000;
 const proofSize = 10000;
 
+// Function to split string inputs by commas into arrays
+const splitData = (arg): (bigint | string)[] => {
+  if (Array.isArray(arg)) {
+    return arg.map((item) => {
+      if (typeof item === 'string') {
+        return !isNaN(Number(item)) ? BigInt(item) : item;
+      }
+      if (typeof item === 'number' || typeof item === 'bigint') {
+        return BigInt(item);
+      }
+      return item;
+    });
+  }
+
+  if (typeof arg === 'string') {
+    const parts = arg.split(',');
+    return parts.map((value) => {
+      const trimmed = value.trim();
+      return !isNaN(Number(trimmed)) ? BigInt(trimmed) : trimmed;
+    });
+  }
+
+  if (typeof arg === 'number' || typeof arg === 'bigint') {
+    return [BigInt(arg)];
+  }
+
+  return [];
+};
+
+// Split the string inputs by commas into arrays only if the argument is an array
+const childBounties =
+  args['childBounties'] && Array.isArray(args['childBounties'])
+    ? splitData(args['childBounties'][0])
+    : [];
+
+const beneficiaries =
+  args['beneficiaries'] && Array.isArray(args['beneficiaries'])
+    ? args['beneficiaries'][0].split(',')
+    : [];
+
+const childBountyAmounts =
+  args['add'] && Array.isArray(args['add']) ? splitData(args['add'][0]) : [];
+const childBountyDescriptions =
+  args['add'] && Array.isArray(args['add']) ? splitData(args['add'][1]) : [];
+
+console.log(childBountyAmounts);
+console.log(childBountyDescriptions);
+
+// Check inputs
+if (childBounties.length === 0 && !args['add']) {
+  throw new Error('You must pass child bounties ID unless you are just adding it.');
+}
+if (childBounties.length !== beneficiaries.length && !args['add']) {
+  throw new Error(
+    'The size of child bounties and beneficiaries must be the same (unless you are just adding).'
+  );
+}
+if (
+  (args['propose'] || args['accept'] || args['award'] || args['claim']) &&
+  childBounties.length === 0 &&
+  !args['add']
+) {
+  throw new Error('Child bounties are required for proposing curator.');
+}
+if (args['award'] && beneficiaries.length === 0) {
+  throw new Error('Beneficiaries are required for awarding child bounties.');
+}
+
 // Create Provider
 let wsProvider;
 switch (args['network']) {
@@ -56,32 +125,20 @@ const main = async () => {
   // Batch Tx
   let batchArgs = [];
 
-  // Split the string inputs by commas into arrays only if the argument is an array
-  const childBounties =
-    args['childBounties'] && Array.isArray(args['childBounties'])
-      ? splitData(args['childBounties'][0])
-      : [];
+  // Loop depending on adding child bounties or proposing curators
+  const loopParameter = args['add'] ? childBountyAmounts.length : childBounties.length;
+  for (let i = 0; i < loopParameter; i++) {
+    // Add Child Bounty
+    if (args['add']) {
+      console.log(`Adding child bounty on parent bounty ${parentBounty}`);
+      let addTx = await api.tx.childBounties.addChildBounty(
+        parentBounty,
+        childBountyAmounts[i],
+        childBountyDescriptions[i] as string
+      );
+      batchArgs.push(addTx);
+    }
 
-  const beneficiaries =
-    args['beneficiaries'] && Array.isArray(args['beneficiaries'])
-      ? args['beneficiaries'][0].split(',')
-      : [];
-
-  // Check inputs
-  if (childBounties.length !== beneficiaries.length) {
-    throw new Error('The size of child bounties and beneficiaries must be the same.');
-  }
-  if (
-    (args['propose'] || args['accept'] || args['award'] || args['claim']) &&
-    childBounties.length === 0
-  ) {
-    throw new Error('Child bounties are required for proposing curator.');
-  }
-  if (args['award'] && beneficiaries.length === 0) {
-    throw new Error('Beneficiaries are required for awarding child bounties.');
-  }
-
-  for (let i = 0; i < childBounties.length; i++) {
     // Propose Curator
     if (args['propose']) {
       let proposeTx;
@@ -131,24 +188,24 @@ const main = async () => {
     }
   }
 
-  // Batch Calls
-  let batchTx = await api.tx.utility.batch(batchArgs);
+  // Final Call
+  let batchTx = batchArgs.length > 1 ? await api.tx.utility.batch(batchArgs) : batchArgs[0];
 
-  console.log(`\nBatch Tx for Chopsticks Test ${batchTx.toHex()}\n`);
+  console.log(`\Tx for Chopsticks Test ${batchTx.toHex()}\n`);
 
-  console.log(`Batch Tx for Multix Submission ${batchTx.method.toHex()}\n`);
+  console.log(`Tx for Multix Submission ${batchTx.method.toHex()}\n`);
 
   // Proxy call
   let proxyTx = await api.tx.proxy.proxy(vlCurator, null, batchTx);
 
-  //console.log(`Proxy Tx ${proxyTx.method.toHex()}`);
-  //console.log(`Proxy Tx hash ${blake2AsHex(proxyTx.method.toHex())}\n`);
+  console.log(`Proxy Tx ${proxyTx.method.toHex()}`);
+  console.log(`Proxy Tx hash ${blake2AsHex(proxyTx.method.toHex())}\n`);
 
   // Multisig Call
   let multisigTx = await api.tx.multisig.asMulti(
     threshold,
     signatories.filter(
-      (input) => u8aToHex(decodeAddress(input)) !== u8aToHex(decodeAddress(beneficiaries[0]))
+      (input) => u8aToHex(decodeAddress(input)) !== u8aToHex(decodeAddress(signatories[0]))
     ),
     null,
     proxyTx,
@@ -181,14 +238,6 @@ const main = async () => {
   }
 
   await api.disconnect();
-};
-
-const splitData = (arg) => {
-  if (typeof arg === 'string') {
-    return arg.includes(',') ? arg.split(',').map((value) => BigInt(value)) : [BigInt(arg)];
-  }
-  // If the argument is already a number or BigInt, return it as an array
-  return [BigInt(arg)];
 };
 
 main();
