@@ -32,7 +32,7 @@ const signatories = sortAddresses([
 
 const parentBounty = 36;
 const vlCurator = '14Gvqxjvy2rKFnY5BobiNq4ZsmbsHnnhZy1SqwZb3nhh3mLE';
-const reftime = 300000000;
+const refTime = 300000000;
 const proofSize = 10000;
 
 // Function to split string inputs by commas into arrays
@@ -120,7 +120,7 @@ const main = async () => {
   await api.isReady;
 
   // Batch Tx
-  let batchArgs = [];
+  let batchArgs = [] as any;
 
   // Loop depending on adding child bounties or proposing curators
   const loopParameter = args['add'] ? childBountyAmounts.length : childBounties.length;
@@ -207,7 +207,7 @@ const main = async () => {
     null,
     proxyTx,
     {
-      refTime: reftime,
+      refTime: refTime,
       proofSize: proofSize,
     }
   );

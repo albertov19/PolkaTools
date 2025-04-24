@@ -1,5 +1,5 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
+import { cryptoWaitReady, blake2AsHex } from '@polkadot/util-crypto';
 import { signFakeWithApi } from '@acala-network/chopsticks-utils';
 
 import yargs from 'yargs';
@@ -13,16 +13,14 @@ const args = yargs.options({
 
 // PAL Config
 const curators = ['Taylor', 'Alberto', 'Bryan', 'cl0w', 'Pierre', 'Vince'];
+const palCurator = '167dwA1UDmWSBRrFd9dXqXjdk1NRhqVjenT2FbHGDyy44GjS';
 
 // General Config
 const parentBounty = 22;
 const valueUSD = 3000;
 const value = Math.round((valueUSD / args['price']) * 10) / 10;
-console.log(value);
-const palCurator = '167dwA1UDmWSBRrFd9dXqXjdk1NRhqVjenT2FbHGDyy44GjS';
 
 // Create Provider
-
 let wsProvider = new WsProvider('wss://polkadot-rpc.dwellir.com');
 
 const main = async () => {
@@ -34,18 +32,19 @@ const main = async () => {
   await api.isReady;
 
   // Batch Tx
-  let batchArgs = [];
+  let batchArgs = [] as any;
 
   // Create Batch
   for (let curator of curators) {
     console.log(curator.concat('-', args['date']));
-    batchArgs.push(
-      api.tx.childBounties.addChildBounty(
-        parentBounty,
-        BigInt(Math.round(value * 100)) * BigInt(10 ** 8),
-        curator.concat('-', args['date'])
-      )
+
+    let tx = await api.tx.childBounties.addChildBounty(
+      parentBounty,
+      BigInt(Math.round(value * 100)) * BigInt(10 ** 8),
+      curator.concat('-', args['date'])
     );
+
+    batchArgs.push(tx);
   }
 
   // Batch Calls
@@ -54,6 +53,12 @@ const main = async () => {
   console.log(`\nBatch Tx for Chopsticks Test ${batchTx.toHex()}\n`);
 
   console.log(`Batch Tx for Multix Submission ${batchTx.method.toHex()}\n`);
+
+  // Proxy call
+  let proxyTx = await api.tx.proxy.proxy(palCurator, null, batchTx);
+
+  console.log(`Proxy Tx ${proxyTx.method.toHex()}`);
+  console.log(`Proxy Tx hash ${blake2AsHex(proxyTx.method.toHex())}\n`);
 
   if (args['chopsticks']) {
     console.log('\n--- Chopsticks Testing ---');

@@ -1,5 +1,5 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { cryptoWaitReady, sortAddresses, decodeAddress } from '@polkadot/util-crypto';
+import { cryptoWaitReady, sortAddresses, decodeAddress, blake2AsHex } from '@polkadot/util-crypto';
 import { u8aToHex } from '@polkadot/util';
 import { signFakeWithApi } from '@acala-network/chopsticks-utils';
 
@@ -7,11 +7,13 @@ import yargs from 'yargs';
 
 // Get input arguments
 const args = yargs.options({
-  sender: { type: 'string', demandOption: true, alias: 's' },
-  propose: { type: 'array', demandOption: false }, // [Child Bounty, fee]
-  accept: { type: 'array', demandOption: false }, // Child Bounty
-  award: { type: 'array', demandOption: false }, // [Child Bounty, Beneficiary]
-  claim: { type: 'array', demandOption: false }, // Child Bounty
+  childBounties: { type: 'array', demandOption: false }, // [Child Bounty IDs]
+  beneficiaries: { type: 'array', demandOption: false }, // [Beneficiary Addresses]
+  add: { type: 'array', demandOption: false, nargs: 0 }, // [Value Description]
+  propose: { type: 'bolean', demandOption: false, nargs: 0 }, // Propose curator
+  accept: { type: 'bolean', demandOption: false, nargs: 0 }, // Accept curator
+  award: { type: 'bolean', demandOption: false, nargs: 0 }, // Award child bounty
+  claim: { type: 'array', demandOption: false }, // Claim child bounty
   network: { type: 'string', demandOption: false, default: 'polkadot', alias: 'n' },
   chopsticks: { type: 'bolean', demandOption: false, nargs: 0, alias: 'c' }, // Run Chopsticks Test at ws://localhost:8000
 }).argv;
@@ -29,8 +31,73 @@ const signatories = sortAddresses([
 
 const parentBounty = 22;
 const palCurator = '167dwA1UDmWSBRrFd9dXqXjdk1NRhqVjenT2FbHGDyy44GjS';
-const palReftime = 300000000;
-const palProofSize = 10000;
+const refTime = 300000000;
+const proofSize = 10000;
+
+// Function to split string inputs by commas into arrays
+const splitData = (arg): (bigint | string)[] => {
+  if (Array.isArray(arg)) {
+    return arg.map((item) => {
+      if (typeof item === 'string') {
+        return !isNaN(Number(item)) ? BigInt(item) : item;
+      }
+      if (typeof item === 'number' || typeof item === 'bigint') {
+        return BigInt(item);
+      }
+      return item;
+    });
+  }
+
+  if (typeof arg === 'string') {
+    const parts = arg.split(',');
+    return parts.map((value) => {
+      const trimmed = value.trim();
+      return !isNaN(Number(trimmed)) ? BigInt(trimmed) : trimmed;
+    });
+  }
+
+  if (typeof arg === 'number' || typeof arg === 'bigint') {
+    return [BigInt(arg)];
+  }
+
+  return [];
+};
+
+// Split the string inputs by commas into arrays only if the argument is an array
+const childBounties =
+  args['childBounties'] && Array.isArray(args['childBounties'])
+    ? splitData(args['childBounties'][0])
+    : [];
+
+const beneficiaries =
+  args['beneficiaries'] && Array.isArray(args['beneficiaries'])
+    ? args['beneficiaries'][0].split(',')
+    : [];
+
+const childBountyAmounts =
+  args['add'] && Array.isArray(args['add']) ? splitData(args['add'][0]) : [];
+const childBountyDescriptions =
+  args['add'] && Array.isArray(args['add']) ? splitData(args['add'][1]) : [];
+
+// Check inputs
+if (childBounties.length === 0 && !args['add']) {
+  throw new Error('You must pass child bounties ID unless you are just adding it.');
+}
+if (childBounties.length !== beneficiaries.length && !args['add']) {
+  throw new Error(
+    'The size of child bounties and beneficiaries must be the same (unless you are just adding).'
+  );
+}
+if (
+  (args['propose'] || args['accept'] || args['award'] || args['claim']) &&
+  childBounties.length === 0 &&
+  !args['add']
+) {
+  throw new Error('Child bounties are required for proposing curator.');
+}
+if (args['award'] && beneficiaries.length === 0) {
+  throw new Error('Beneficiaries are required for awarding child bounties.');
+}
 
 // Create Provider
 let wsProvider;
@@ -54,113 +121,93 @@ const main = async () => {
   // Batch Tx
   let batchArgs = [] as any;
 
-  // Split the string inputs by commas into arrays only if the argument is an array
-  const proposeBountiesID =
-    args['propose'] && Array.isArray(args['propose']) ? splitData(args['propose'][0]) : [];
+  // Loop depending on adding child bounties or proposing curators
+  const loopParameter = args['add'] ? childBountyAmounts.length : childBounties.length;
+  for (let i = 0; i < loopParameter; i++) {
+    // Add Child Bounty
+    if (args['add']) {
+      console.log(`Adding child bounty on parent bounty ${parentBounty}`);
+      let addTx = await api.tx.childBounties.addChildBounty(
+        parentBounty,
+        childBountyAmounts[i],
+        childBountyDescriptions[i] as string
+      );
+      batchArgs.push(addTx);
+    }
 
-  const proposeBountiesFees =
-    args['propose'] && Array.isArray(args['propose']) ? splitData(args['propose'][1]) : [];
+    // Propose Curator
+    if (args['propose']) {
+      let proposeTx;
 
-  const acceptBounties =
-    args['accept'] && Array.isArray(args['accept']) ? splitData(args['accept'][0]) : [];
+      console.log(`Proposing curator for child bounties ${childBounties[i]}`);
+      proposeTx = await api.tx.childBounties.proposeCurator(
+        parentBounty,
+        childBounties[i], // Child Bounty
+        palCurator,
+        0
+      );
+      batchArgs.push(proposeTx);
+    }
 
-  const awardBounties =
-    args['award'] && Array.isArray(args['award']) ? splitData(args['award'][0]) : [];
+    // Accept Curator
+    if (args['accept']) {
+      console.log(`Accepting curator for child bounties ${childBounties[i]}`);
+      let acceptTx;
+      acceptTx = await api.tx.childBounties.acceptCurator(
+        parentBounty,
+        childBounties[i] // Child Bounty
+      );
+      batchArgs.push(acceptTx);
+    }
 
-  const awardBeneficiary =
-    args['award'] && Array.isArray(args['award'])
-      ? typeof args['award'][1] === 'string' && args['award'][1].includes(',')
-        ? args['award'][1].split(',')
-        : [args['award'][1]]
-      : [];
+    // Award Child Bounty
+    if (args['award']) {
+      console.log(`Awarding child bounties ${childBounties[i]}`);
+      let awardTx = await api.tx.childBounties.awardChildBounty(
+        parentBounty,
+        childBounties[i], // Child Bounty
+        beneficiaries[i] // Beneficiary
+      );
 
-  const claimBounties =
-    args['claim'] && Array.isArray(args['claim']) ? splitData(args['claim'][0]) : [];
+      batchArgs.push(awardTx);
+    }
 
-  console.log(`Proposing curator for child bounties ${proposeBountiesID}`);
-  console.log(`Setting child bounties fee for curator as ${proposeBountiesFees}`);
-  console.log(`Accepting child bounties ${acceptBounties}`);
-  console.log(`Awarding child bounties ${awardBounties}`);
-  console.log(`Awarding addresses are ${awardBeneficiary}`);
-  console.log(`Claiming child bounties ${claimBounties}`);
+    // Claim Child Bounty
 
-  // Check lengths
-  if (
-    proposeBountiesID.length !== proposeBountiesFees.length ||
-    awardBounties.length !== awardBeneficiary.length
-  ) {
-    throw new Error(
-      'The size of propose bounties and fees, or award bounties and award beneficiaries must be the same.'
-    );
+    if (args['claim']) {
+      console.log(`Claiming child bounties ${childBounties[i]}`);
+      let claimTx = await api.tx.childBounties.claimChildBounty(
+        parentBounty,
+        childBounties[i] // Child Bounty
+      );
+      batchArgs.push(claimTx);
+    }
   }
 
-  // Propose Curator
-  let proposeTx;
-  for (let i = 0; i < proposeBountiesID.length; i++) {
-    proposeTx = await api.tx.childBounties.proposeCurator(
-      parentBounty,
-      proposeBountiesID[i], // Child Bounty
-      palCurator,
-      proposeBountiesFees[i] // Fee
-    );
-    batchArgs.push(proposeTx);
-  }
+  // Final Call
+  let batchTx = batchArgs.length > 1 ? await api.tx.utility.batchAll(batchArgs) : batchArgs[0];
 
-  // Accept Curator
-  let acceptTx;
-  for (let i = 0; i < acceptBounties.length; i++) {
-    acceptTx = await api.tx.childBounties.acceptCurator(
-      parentBounty,
-      acceptBounties[i] // Child Bounty
-    );
-    batchArgs.push(acceptTx);
-  }
+  console.log(`\Tx for Chopsticks Test ${batchTx.toHex()}\n`);
 
-  // Award Child Bounty
-  let awardTx;
-  for (let i = 0; i < awardBounties.length; i++) {
-    awardTx = await api.tx.childBounties.awardChildBounty(
-      parentBounty,
-      awardBounties[i], // Child Bounty
-      awardBeneficiary[i] // Beneficiary
-    );
-    batchArgs.push(awardTx);
-  }
-
-  // Claim Child Bounty
-  let claimTx;
-  for (let i = 0; i < claimBounties.length; i++) {
-    claimTx = await api.tx.childBounties.claimChildBounty(
-      parentBounty,
-      awardBounties[i] // Child Bounty
-    );
-    batchArgs.push(claimTx);
-  }
-
-  // Batch Calls
-  let batchTx = await api.tx.utility.batch(batchArgs);
-
-  console.log(`\nBatch Tx for Chopsticks Test ${batchTx.toHex()}\n`);
-
-  console.log(`Batch Tx for Multix Submission ${batchTx.method.toHex()}\n`);
+  console.log(`Tx for Multix Submission ${batchTx.method.toHex()}\n`);
 
   // Proxy call
   let proxyTx = await api.tx.proxy.proxy(palCurator, null, batchTx);
 
-  //console.log(`Proxy Tx ${proxyTx.method.toHex()}`);
-  //console.log(`Proxy Tx hash ${blake2AsHex(proxyTx.method.toHex())}\n`);
+  console.log(`Proxy Tx ${proxyTx.method.toHex()}`);
+  console.log(`Proxy Tx hash ${blake2AsHex(proxyTx.method.toHex())}\n`);
 
   // Multisig Call
   let multisigTx = await api.tx.multisig.asMulti(
     threshold,
     signatories.filter(
-      (input) => u8aToHex(decodeAddress(input)) !== u8aToHex(decodeAddress(args['sender']))
+      (input) => u8aToHex(decodeAddress(input)) !== u8aToHex(decodeAddress(signatories[0]))
     ),
     null,
     proxyTx,
     {
-      refTime: palReftime,
-      proofSize: palProofSize,
+      refTime: refTime,
+      proofSize: proofSize,
     }
   );
 
@@ -187,14 +234,6 @@ const main = async () => {
   }
 
   await api.disconnect();
-};
-
-const splitData = (arg) => {
-  if (typeof arg === 'string') {
-    return arg.includes(',') ? arg.split(',').map((value) => BigInt(value)) : [BigInt(arg)];
-  }
-  // If the argument is already a number or BigInt, return it as an array
-  return [BigInt(arg)];
 };
 
 main();
