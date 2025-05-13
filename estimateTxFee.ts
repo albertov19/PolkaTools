@@ -78,7 +78,8 @@ const main = async () => {
   }
 
   console.log(`Fee of your call is ${txFee.partialFee.toHuman()}`);
-  console.log(`Weight of your call is ${txFee.weight.toHuman()}`);
+  console.log(`Weight of your call is`);
+  console.log(txFee.weight.toHuman());
 
   await api.disconnect();
 };
