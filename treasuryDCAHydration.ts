@@ -8,22 +8,23 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { u8aToHex } from '@polkadot/util';
 
 // Input Data
-const transferAmount = BigInt('100000000000000000000000');
-const wsHydraProvider = 'wss://hydradx-rpc.dwellir.com';
+const transferAmount = BigInt('1800000000000000000000000');
+const transferFee = BigInt('1000000000000000000');
+const wsHydraProvider = 'wss://rpc.hydradx.cloud';
 const wsMoonbeamProvider = 'wss://wss.api.moonbeam.network';
 // XCM Transactor Config
-const feeAmount = BigInt('3000000000000000000');
-const refTime = BigInt('7000000000'); // For XCM Transact
-const proofSize = BigInt('150000'); // For XCM Transact
+const feeAmount = BigInt('10000000000000');
+const refTime = BigInt('8000000000'); // For XCM Transact
+const proofSize = BigInt('300000'); // For XCM Transact
 // DCA Config
-const dcaPeriod = 6; // N of blocks between trades (12 or 6 seconds)
+const dcaPeriod = 3600; // N of blocks between trades (6 seconds)
 const dcaTotalAmount = transferAmount; // Total amount to trade in the entire DCA
 const dcaMaxRetries = BigInt(9); // Amount of times that the schedule will be retried before it cancels
 const dcaSlippage = BigInt('15000'); // Slippage tolerance for the DCA in permill
-let dcaOrderType: 'Buy' | 'Sell' = 'Buy'; // Buy an assetOut or Sell an assetIn
+let dcaOrderType: 'Buy' | 'Sell' = 'Sell'; // Buy an assetOut or Sell an assetIn
 const dcaAssetIn = 16; // GLMR asset ID
-const dcaAssetOut = [10, 22]; // USDT/USDC asset ID (USDT = 10, USDC = 22)
-const dcaAmount = BigInt('250000000'); // Amount of each trade (depends in/out on Buy/Sell)
+const dcaAssetOut = [22]; // USDT/USDC asset ID (USDT = 10, USDC = 22)
+const dcaAmount = BigInt('3082500000000000000000'); // Amount of each trade (depends in/out on Buy/Sell)
 const dcaMinTokenPrice = BigInt('5'); // Cents of a dollar - min price of the token to trade in
 
 // Treasury Account Moonbeam
@@ -61,7 +62,7 @@ const transferTreasuryFunds = async (api, sovereignAccount, targetParaId) => {
           interior: { X1: [{ PalletInstance: 10 }] },
         },
         fun: {
-          Fungible: { amount: transferAmount + feeAmount },
+          Fungible: { amount: transferAmount + transferFee },
         },
       },
     ],
@@ -88,7 +89,7 @@ const transferTreasuryFunds = async (api, sovereignAccount, targetParaId) => {
 
 // Hydration DCA Call
 const createDCACall = async (api, sovereigAccount) => {
-  let dcaTxs = [];
+  let dcaTxs = [] as any;
 
   for (let i = 0; i < dcaAssetOut.length; i++) {
     let call;
@@ -172,7 +173,7 @@ const createXCMTransactor = async (api, targetParaId, dcaCalls) => {
     },
   };
 
-  let xcmTransactorCalls = [];
+  let xcmTransactorCalls = [] as any;
 
   for (let i = 0; i < dcaCalls.length; i++) {
     const call = await api.tx.xcmTransactor.transactThroughSovereign(
@@ -180,7 +181,12 @@ const createXCMTransactor = async (api, targetParaId, dcaCalls) => {
       null,
       {
         currency: {
-          AsCurrencyId: 'SelfReserve',
+          AsMultiLocation: {
+            V4: {
+              parents: 1,
+              interior: { X2: [{ Parachain: targetParaId }, { GeneralIndex: 0 }] },
+            },
+          },
         },
         feeAmount: feeAmount / BigInt(dcaCalls.length),
       },
@@ -202,7 +208,7 @@ const createXCMTransactor = async (api, targetParaId, dcaCalls) => {
 
 // Wrap Calls with Scheduler
 const wrapCalls = async (api, xcmTransactorCalls) => {
-  let wrapCalls = [];
+  let wrapCalls = [] as any;
 
   // Chains are in different block times
   // We ensure that the calls are executed at least 3 blocks apart
@@ -263,7 +269,13 @@ const main = async () => {
   const xcmTransactorBytes = await createXCMTransactor(apiMoonbeam, hydrationParaId, dcaCalls);
 
   // Wrap XCM Transactor Calls with Scheduler
-  const wrappedXcmBytes = await wrapCalls(apiMoonbeam, xcmTransactorBytes);
+  let wrappedXcmBytes;
+  if (xcmTransactorBytes.length > 1) {
+    wrappedXcmBytes = await wrapCalls(apiMoonbeam, xcmTransactorBytes);
+  } else {
+    // If only one call, we don't need to wrap it
+    wrappedXcmBytes = xcmTransactorBytes;
+  }
 
   // Batch Both Treasury and XCM Transactor Calls
   const batchTxs = [trasferBytes, ...wrappedXcmBytes];
