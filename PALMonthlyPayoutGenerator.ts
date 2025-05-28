@@ -1,86 +1,55 @@
-import { ApiPromise, WsProvider } from '@polkadot/api';
-import { cryptoWaitReady, blake2AsHex } from '@polkadot/util-crypto';
-import { signFakeWithApi } from '@acala-network/chopsticks-utils';
-
+import { spawn } from 'child_process';
+import path from 'path';
 import yargs from 'yargs';
 
-// Get input arguments
+// ✅ Fix: "boolean" instead of "bolean"
 const args = yargs.options({
   price: { type: 'number', demandOption: true, alias: 'p' },
   date: { type: 'string', demandOption: false, alias: 'd' },
-  chopsticks: { type: 'bolean', demandOption: false, nargs: 0, alias: 'c' }, // Run Chopsticks Test at ws://localhost:8000
-}).argv;
+  chopsticks: { type: 'boolean', demandOption: false, nargs: 0, alias: 'c' },
+}).argv as any;
 
-// PAL Config
+// Data setup
 const curators = ['Taylor', 'Alberto', 'Bryan', 'cl0w', 'Pierre', 'Vince'];
-const palCurator = '167dwA1UDmWSBRrFd9dXqXjdk1NRhqVjenT2FbHGDyy44GjS';
+const curatorAddresses = [
+  '15aSnCUARuwBoLYn6nkFj5ap2DUfRmKcXJaAotfVwvVQxNK3',
+  '16AhqStFQa8GrffE7WapHrUQ29dmioZHuwFTn4z9fQ7WBGBZ',
+  '14DsLzVyTUTDMm2eP3czwPbH53KgqnQRp3CJJZS9GR7yxGDP',
+  '15BERoWxrWC61cAb4JjpUdM7sy8FAS9uduismDbZ7PURZLto',
+  '14Pn8sUxdEMgFRDgZ5J2VfcUVMLaMQhst9XuvCj9mKJYUAN2',
+  '1brScQ9KDuFB2EsBc93smHY5T464gjWzzvtnJbBwKofTqad',
+];
 
-// General Config
-const parentBounty = 22;
+// Computed values
 const valueUSD = 3000;
-const value = Math.round((valueUSD / args['price']) * 10) / 10;
+const value = Math.round((valueUSD / args['price']) * 10) * 10 ** 9; // Convert to Planck
+const curatorTags = curators.map(curator => `${curator}-${args['date']}`);
+const scriptPath = path.resolve(__dirname, 'PALTxGenerator.ts');
 
-// Create Provider
-let wsProvider = new WsProvider('wss://polkadot-rpc.dwellir.com');
+// ✅ Dynamically build args array
+const cliArgs = [
+  scriptPath,
+  '--add',
+  `${value},${value},${value},${value},${value},${value}`,
+  `${curatorTags.join(',')}`,
+  '--beneficiaries',
+  curatorAddresses.join(','),
+  '--propose',
+  '',
+  '--accept',
+  '',
+  '--award',
+  '',
+  '--claim',
+  '',
+];
 
-const main = async () => {
-  // Initialize WASM
-  await cryptoWaitReady();
+// ✅ Conditionally add --chopsticks if present
+if (args['chopsticks']) {
+  cliArgs.push('--chopsticks');
+}
 
-  // Wait for Provider
-  const api = await ApiPromise.create({ provider: wsProvider, noInitWarn: true });
-  await api.isReady;
-
-  // Batch Tx
-  let batchArgs = [] as any;
-
-  // Create Batch
-  for (let curator of curators) {
-    console.log(curator.concat('-', args['date']));
-
-    let tx = await api.tx.childBounties.addChildBounty(
-      parentBounty,
-      BigInt(Math.round(value * 100)) * BigInt(10 ** 8),
-      curator.concat('-', args['date'])
-    );
-
-    batchArgs.push(tx);
-  }
-
-  // Batch Calls
-  let batchTx = await api.tx.utility.batch(batchArgs);
-
-  console.log(`\nBatch Tx for Chopsticks Test ${batchTx.toHex()}\n`);
-
-  console.log(`Batch Tx for Multix Submission ${batchTx.method.toHex()}\n`);
-
-  // Proxy call
-  let proxyTx = await api.tx.proxy.proxy(palCurator, null, batchTx);
-
-  console.log(`Proxy Tx ${proxyTx.method.toHex()}`);
-  console.log(`Proxy Tx hash ${blake2AsHex(proxyTx.method.toHex())}\n`);
-
-  if (args['chopsticks']) {
-    console.log('\n--- Chopsticks Testing ---');
-
-    const chopsticksWS = 'ws://127.0.0.1:8000';
-
-    const chopsticksProvider = new WsProvider(chopsticksWS);
-    const chopsticksAPI = await ApiPromise.create({
-      provider: chopsticksProvider,
-      noInitWarn: true,
-    });
-
-    let chopsticksTx = await chopsticksAPI.tx(batchTx.toHex());
-
-    await signFakeWithApi(chopsticksAPI, chopsticksTx, palCurator);
-    await chopsticksTx.send();
-
-    console.log('--- Chopsticks Test Done ---');
-    await chopsticksAPI.disconnect();
-  }
-
-  await api.disconnect();
-};
-
-main();
+// ✅ Spawn child process
+const child = spawn('ts-node', cliArgs, {
+  stdio: 'inherit',
+});

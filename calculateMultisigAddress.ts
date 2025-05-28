@@ -10,7 +10,6 @@ const args = yargs
   })
   .check((argv) => {
     // Check length
-    console.log(argv.addresses.length);
     if (argv.addresses.length < 2) {
       throw new Error('Addresses array must have at least a length of 2');
     }
@@ -24,5 +23,6 @@ const args = yargs
 
 const multisigAddress = u8aToHex(createKeyMulti(args['addresses'], BigInt(args['threshold'])));
 
+console.log(`Composition: ${args['threshold']}/${args['addresses'].length}`);
 console.log(`32 Bytes Multisig Address: ${multisigAddress}`);
 console.log(`Encoded (Generic): ${encodeAddress(multisigAddress)}`);

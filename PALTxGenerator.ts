@@ -7,9 +7,9 @@ import yargs from 'yargs';
 
 // Get input arguments
 const args = yargs.options({
-  childBounties: { type: 'array', demandOption: false }, // [Child Bounty IDs]
-  beneficiaries: { type: 'array', demandOption: false }, // [Beneficiary Addresses]
-  add: { type: 'array', demandOption: false, nargs: 0 }, // [Value Description]
+  childBounties: { type: 'array', demandOption: false }, // [Child-Bounty-IDs]
+  beneficiaries: { type: 'array', demandOption: false }, // [Beneficiary-Addresses]
+  add: { type: 'array', demandOption: false }, // [Value(with-decimals) Description]
   propose: { type: 'bolean', demandOption: false, nargs: 0 }, // Propose curator
   accept: { type: 'bolean', demandOption: false, nargs: 0 }, // Accept curator
   award: { type: 'bolean', demandOption: false, nargs: 0 }, // Award child bounty
@@ -63,47 +63,63 @@ const splitData = (arg): (bigint | string)[] => {
   return [];
 };
 
-// Split the string inputs by commas into arrays only if the argument is an array
-const childBounties =
-  args['childBounties'] && Array.isArray(args['childBounties'])
-    ? splitData(args['childBounties'][0])
-    : [];
+const checkInput = async (api) => {
+  const beneficiaries =
+    args['beneficiaries'] && Array.isArray(args['beneficiaries'])
+      ? args['beneficiaries'][0].split(',')
+      : [];
 
-const beneficiaries =
-  args['beneficiaries'] && Array.isArray(args['beneficiaries'])
-    ? args['beneficiaries'][0].split(',')
-    : [];
+  let childBounties;
 
-const childBountyAmounts =
-  args['add'] && Array.isArray(args['add']) ? splitData(args['add'][0]) : [];
-const childBountyDescriptions =
-  args['add'] && Array.isArray(args['add']) ? splitData(args['add'][1]) : [];
+  if (args['childBounties']) {
+    // Split the string inputs by commas into arrays only if the argument is an array]
+    childBounties = Array.isArray(args['childBounties']) ? splitData(args['childBounties'][0]) : [];
+  } else if (args['add']) {
+    // Get the total number of child bounties for the parent
+    const totalChildBounties = await api.query.childBounties.parentTotalChildBounties(parentBounty);
 
-// Check inputs
-if (childBounties.length === 0 && !args['add']) {
-  throw new Error('You must pass child bounties ID unless you are just adding it.');
-}
-if (childBounties.length !== beneficiaries.length && !args['add']) {
-  throw new Error(
-    'The size of child bounties and beneficiaries must be the same (unless you are just adding).'
-  );
-}
-if (
-  (args['propose'] || args['accept'] || args['award'] || args['claim']) &&
-  childBounties.length === 0 &&
-  !args['add']
-) {
-  throw new Error('Child bounties are required for proposing curator.');
-}
-if (args['award'] && beneficiaries.length === 0) {
-  throw new Error('Beneficiaries are required for awarding child bounties.');
-}
+    // Start array at totalChildBounties, incrementing from there
+    const start = BigInt(totalChildBounties);
+    childBounties = Array.from(
+      { length: totalChildBounties.toNumber() },
+      (_, i) => start + BigInt(i)
+    );
+  }
+
+  const childBountyAmounts =
+    args['add'] && Array.isArray(args['add']) ? splitData(args['add'][0]) : [];
+
+  const childBountyDescriptions =
+    args['add'] && Array.isArray(args['add']) ? splitData(args['add'][1]) : [];
+
+  // Check inputs
+  if (childBounties.length === 0 && !args['add']) {
+    throw new Error('You must pass child bounties ID unless you are just adding it.');
+  }
+  if (childBounties.length !== beneficiaries.length && !args['add']) {
+    throw new Error(
+      'The size of child bounties and beneficiaries must be the same (unless you are just adding).'
+    );
+  }
+  if (
+    (args['propose'] || args['accept'] || args['award'] || args['claim']) &&
+    childBounties.length === 0 &&
+    !args['add']
+  ) {
+    throw new Error('Child bounties are required for proposing curator.');
+  }
+  if (args['award'] && beneficiaries.length === 0) {
+    throw new Error('Beneficiaries are required for awarding child bounties.');
+  }
+
+  return [childBounties, beneficiaries, childBountyAmounts, childBountyDescriptions];
+};
 
 // Create Provider
 let wsProvider;
 switch (args['network']) {
   case 'polkadot':
-    wsProvider = new WsProvider('wss://polkadot-rpc.dwellir.com');
+    wsProvider = new WsProvider('wss://polkadot.public.curie.radiumblock.co/ws');
     break;
   case 'kusama':
     wsProvider = new WsProvider('wss://kusama-rpc.dwellir.com');
@@ -118,6 +134,10 @@ const main = async () => {
   const api = await ApiPromise.create({ provider: wsProvider, noInitWarn: true });
   await api.isReady;
 
+  // Input checks
+  const [childBounties, beneficiaries, childBountyAmounts, childBountyDescriptions] =
+    await checkInput(api);
+
   // Batch Tx
   let batchArgs = [] as any;
 
@@ -126,7 +146,7 @@ const main = async () => {
   for (let i = 0; i < loopParameter; i++) {
     // Add Child Bounty
     if (args['add']) {
-      console.log(`Adding child bounty on parent bounty ${parentBounty}`);
+      console.log(`Adding child bounty ${childBounties[i]} on parent bounty ${parentBounty}`);
       let addTx = await api.tx.childBounties.addChildBounty(
         parentBounty,
         childBountyAmounts[i],
@@ -213,7 +233,7 @@ const main = async () => {
 
   console.log(`Multisig Tx ${multisigTx.toHex()}`);
 
-  if (args['chopsticks']) {
+  /*if (args['chopsticks']) {
     console.log('\n--- Chopsticks Testing ---');
 
     const chopsticksWS = 'ws://127.0.0.1:8000';
@@ -231,7 +251,7 @@ const main = async () => {
 
     console.log('--- Chopsticks Test Done ---');
     await chopsticksAPI.disconnect();
-  }
+  }*/
 
   await api.disconnect();
 };
