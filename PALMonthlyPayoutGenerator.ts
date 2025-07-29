@@ -6,6 +6,7 @@ import yargs from 'yargs';
 const args = yargs.options({
   price: { type: 'number', demandOption: true, alias: 'p' },
   date: { type: 'string', demandOption: false, alias: 'd' },
+  childBountiesOffset: { type: 'number', demandOption: false, default: 0 },
   chopsticks: { type: 'boolean', demandOption: false, nargs: 0, alias: 'c' },
 }).argv as any;
 
@@ -23,7 +24,7 @@ const curatorAddresses = [
 // Computed values
 const valueUSD = 3000;
 const value = Math.round((valueUSD / args['price']) * 10) * 10 ** 9; // Convert to Planck
-const curatorTags = curators.map(curator => `${curator}-${args['date']}`);
+const curatorTags = curators.map((curator) => `${curator}-${args['date']}`);
 const scriptPath = path.resolve(__dirname, 'PALTxGenerator.ts');
 
 // ✅ Dynamically build args array
@@ -32,6 +33,8 @@ const cliArgs = [
   '--add',
   `${value},${value},${value},${value},${value},${value}`,
   `${curatorTags.join(',')}`,
+  '--childBountiesOffset',
+  `${args['childBountiesOffset']}`,
   '--beneficiaries',
   curatorAddresses.join(','),
   '--propose',

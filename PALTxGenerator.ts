@@ -8,14 +8,15 @@ import yargs from 'yargs';
 // Get input arguments
 const args = yargs.options({
   childBounties: { type: 'array', demandOption: false }, // [Child-Bounty-IDs]
+  childBountiesOffset: { type: 'number', demandOption: false, default: 0 }, // Offset for child bounties
   beneficiaries: { type: 'array', demandOption: false }, // [Beneficiary-Addresses]
   add: { type: 'array', demandOption: false }, // [Value(with-decimals) Description]
-  propose: { type: 'bolean', demandOption: false, nargs: 0 }, // Propose curator
-  accept: { type: 'bolean', demandOption: false, nargs: 0 }, // Accept curator
-  award: { type: 'bolean', demandOption: false, nargs: 0 }, // Award child bounty
+  propose: { type: 'boolean', demandOption: false, nargs: 0 }, // Propose curator
+  accept: { type: 'boolean', demandOption: false, nargs: 0 }, // Accept curator
+  award: { type: 'boolean', demandOption: false, nargs: 0 }, // Award child bounty
   claim: { type: 'array', demandOption: false }, // Claim child bounty
   network: { type: 'string', demandOption: false, default: 'polkadot', alias: 'n' },
-  chopsticks: { type: 'bolean', demandOption: false, nargs: 0, alias: 'c' }, // Run Chopsticks Test at ws://localhost:8000
+  chopsticks: { type: 'boolean', demandOption: false, nargs: 0, alias: 'c' }, // Run Chopsticks Test at ws://localhost:8000
 }).argv;
 
 // PAL Config
@@ -79,7 +80,7 @@ const checkInput = async (api) => {
     const totalChildBounties = await api.query.childBounties.parentTotalChildBounties(parentBounty);
 
     // Start array at totalChildBounties, incrementing from there
-    const start = BigInt(totalChildBounties);
+    const start = BigInt(totalChildBounties) + BigInt(args['childBountiesOffset']);
     childBounties = Array.from(
       { length: totalChildBounties.toNumber() },
       (_, i) => start + BigInt(i)
@@ -233,7 +234,7 @@ const main = async () => {
 
   console.log(`Multisig Tx ${multisigTx.toHex()}`);
 
-  /*if (args['chopsticks']) {
+  if (args['chopsticks']) {
     console.log('\n--- Chopsticks Testing ---');
 
     const chopsticksWS = 'ws://127.0.0.1:8000';
@@ -246,12 +247,12 @@ const main = async () => {
 
     let chopsticksTx = await chopsticksAPI.tx(batchTx.toHex());
 
-    await signFakeWithApi(chopsticksAPI, chopsticksTx, palCurator);
+    await signFakeWithApi(chopsticksAPI, chopsticksTx as unknown as any, palCurator);
     await chopsticksTx.send();
 
     console.log('--- Chopsticks Test Done ---');
     await chopsticksAPI.disconnect();
-  }*/
+  }
 
   await api.disconnect();
 };
