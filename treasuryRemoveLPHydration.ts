@@ -1,7 +1,6 @@
 /*
-    1. We need to transfer GLMR funds from the Treasury to GLMR Sovereign Account in Hydration
-    2. We need to construct the DCA call in Hydration to get the bytes of the calldata
-    3. We need to send an XCM messate with Transact providing the calls calculated in step 2, to remotely execute the DCA call
+    1. We need to withdraw the Moonbeam Treasury Sovereign Account's GLMR LP with position_id "3,376" in Hydration's Omnipool
+    2. We need to transfer GLMR funds from the Moonbeam Treasury Sovereign Account in Hydration to the Treasury Account on Moonbeam
 */
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
@@ -10,7 +9,7 @@ import { u8aToHex } from '@polkadot/util';
 // Input Data
 const positionID = BigInt('3376');
 const glmrID = BigInt('16');
-const glmrTransferAmount = BigInt('445440000000000000000000');
+const glmrTransferAmount = BigInt('430000000000000000000000');
 const wsHydraProvider = 'wss://rpc.hydradx.cloud';
 const wsMoonbeamProvider = 'wss://wss.api.moonbeam.network';
 // XCM Transactor Config
