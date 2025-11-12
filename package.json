@@ -43,5 +43,8 @@
       "@polkadot/util": "13.5.7",
       "@polkadot/util-crypto": "13.5.7"
     }
+  },
+  "devDependencies": {
+    "@types/yargs": "^17.0.34"
   }
 }
