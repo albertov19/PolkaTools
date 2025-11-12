@@ -136,7 +136,7 @@ const createXCMTransactor = async (api, targetParaId, hydraCall) => {
       },
       true
     );
-    console.log(`XCM Transactor Moonbeam Call #${xcmTransactorCall.method.toHex()}\n`);
+    console.log(`XCM Transactor Moonbeam Call ${xcmTransactorCall.method.toHex()}\n`);
 
   return xcmTransactorCall;
 };

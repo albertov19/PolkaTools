@@ -5,3 +5,7 @@ accounts.json
 *staking_addresses.json
 moonriver*.json
 moonbeam*.json
+
+
+# Ignore kluster.ai Verify Code rules
+.github/instructions/kluster-code-verify.instructions.md

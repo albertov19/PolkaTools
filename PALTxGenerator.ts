@@ -17,17 +17,18 @@ const args = yargs.options({
   claim: { type: 'array', demandOption: false }, // Claim child bounty
   network: { type: 'string', demandOption: false, default: 'polkadot', alias: 'n' },
   chopsticks: { type: 'boolean', demandOption: false, nargs: 0, alias: 'c' }, // Run Chopsticks Test at ws://localhost:8000
+  signer: { type: 'string', demandOption: false, default: '' }, // Signer address
 }).argv;
 
 // PAL Config
 const threshold = 4;
 const signatories = sortAddresses([
+  '16AhqStFQa8GrffE7WapHrUQ29dmioZHuwFTn4z9fQ7WBGBZ',
   '14DsLzVyTUTDMm2eP3czwPbH53KgqnQRp3CJJZS9GR7yxGDP',
   '14Pn8sUxdEMgFRDgZ5J2VfcUVMLaMQhst9XuvCj9mKJYUAN2',
   '1brScQ9KDuFB2EsBc93smHY5T464gjWzzvtnJbBwKofTqad',
   '15BERoWxrWC61cAb4JjpUdM7sy8FAS9uduismDbZ7PURZLto',
   '15aSnCUARuwBoLYn6nkFj5ap2DUfRmKcXJaAotfVwvVQxNK3',
-  '16AhqStFQa8GrffE7WapHrUQ29dmioZHuwFTn4z9fQ7WBGBZ',
 ]);
 
 const parentBounty = 22;
@@ -120,10 +121,10 @@ const checkInput = async (api) => {
 let wsProvider;
 switch (args['network']) {
   case 'polkadot':
-    wsProvider = new WsProvider('wss://polkadot.public.curie.radiumblock.co/ws');
+    wsProvider = new WsProvider('wss://rpc-asset-hub-polkadot.luckyfriday.io');
     break;
   case 'kusama':
-    wsProvider = new WsProvider('wss://kusama-rpc.dwellir.com');
+    wsProvider = new WsProvider('wss://rpc-asset-hub-kusama.luckyfriday.io');
     break;
 }
 
@@ -222,7 +223,7 @@ const main = async () => {
   let multisigTx = await api.tx.multisig.asMulti(
     threshold,
     signatories.filter(
-      (input) => u8aToHex(decodeAddress(input)) !== u8aToHex(decodeAddress(signatories[0]))
+      (input) => u8aToHex(decodeAddress(input)) !== u8aToHex(decodeAddress(args['signer']))
     ),
     null,
     proxyTx,

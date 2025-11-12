@@ -18,8 +18,12 @@ if (argv['network'] === 'moonbeam') {
 } else if (argv['network'] === 'moonriver') {
   wsProvider = new WsProvider('wss://wss.api.moonriver.moonbeam.network');
 } else {
-  console.error('Network not supported');
-  process.exit();
+  try {
+    wsProvider = new WsProvider(argv['network']);
+  } catch (error) {
+    console.error('Error creating WebSocket provider:', error);
+    process.exit();
+  }
 }
 
 const main = async () => {
