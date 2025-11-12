@@ -17,6 +17,7 @@ const argv = yargs(hideBin(process.argv)).options({
 function makeProvider(network: string): WsProvider {
   if (network === 'moonbeam') return new WsProvider('wss://wss.api.moonbeam.network');
   if (network === 'moonriver') return new WsProvider('wss://wss.api.moonriver.moonbeam.network');
+  if (network === 'moonbase') return new WsProvider('wss://wss.api.moonbase.moonbeam.network');
   return new WsProvider(network);
 }
 
