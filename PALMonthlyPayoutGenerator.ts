@@ -6,6 +6,7 @@ import yargs from 'yargs';
 const args = yargs.options({
   price: { type: 'number', demandOption: true, alias: 'p' },
   date: { type: 'string', demandOption: false, alias: 'd' },
+  signer: { type: 'string', demandOption: false, default: '' }, // Signer address
   childBountiesOffset: { type: 'number', demandOption: false, default: 0 },
   chopsticks: { type: 'boolean', demandOption: false, nargs: 0, alias: 'c' },
 }).argv as any;
@@ -33,6 +34,8 @@ const cliArgs = [
   '--add',
   `${value},${value},${value},${value},${value},${value}`,
   `${curatorTags.join(',')}`,
+  '--signer',
+  `${args['signer']}`,
   '--childBountiesOffset',
   `${args['childBountiesOffset']}`,
   '--beneficiaries',
