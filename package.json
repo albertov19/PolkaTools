@@ -18,33 +18,24 @@
   },
   "homepage": "https://github.com/albertov19/PolkaTools#readme",
   "dependencies": {
-    "@acala-network/chopsticks-utils": "^1.2.4",
+    "@acala-network/chopsticks-utils": "^1.2.5",
     "@moonbeam-network/api-augment": "^0.3900.0",
-    "@polkadot/api": "16.5.1",
-    "@polkadot/keyring": "13.5.7",
-    "@polkadot/rpc-provider": "^16.5.1",
-    "@polkadot/types": "^16.5.1",
-    "@polkadot/util": "13.5.7",
-    "@polkadot/util-crypto": "13.5.7",
-    "@types/bn.js": "^5.1.6",
-    "@types/node": "^22.7.9",
-    "ethers": "^6.14.1",
-    "inquirer": "^12.4.2",
-    "ts-node": "^10.4.0",
-    "typescript": "^4.5.4",
-    "yargs": "^17.3.1"
+    "@polkadot/api": "16.5.4",
+    "@polkadot/keyring": "14.0.1",
+    "@polkadot/rpc-provider": "16.5.4",
+    "@polkadot/types": "16.5.4",
+    "@polkadot/util": "14.0.1",
+    "@polkadot/util-crypto": "14.0.1",
+    "@types/bn.js": "^5.2.0",
+    "@types/node": "^25.0.3",
+    "ethers": "^6.16.0",
+    "inquirer": "^13.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "yargs": "^18.0.0"
   },
-  "pnpm": {
-    "overrides": {
-      "@polkadot/api": "16.5.1",
-      "@polkadot/types": "16.5.1",
-      "@polkadot/rpc-provider": "16.5.1",
-      "@polkadot/keyring": "13.5.7",
-      "@polkadot/util": "13.5.7",
-      "@polkadot/util-crypto": "13.5.7"
-    }
-  },
+  "pnpm": {},
   "devDependencies": {
-    "@types/yargs": "^17.0.34"
+    "@types/yargs": "^17.0.35"
   }
 }
