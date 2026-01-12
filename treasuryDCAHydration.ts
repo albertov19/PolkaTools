@@ -12,12 +12,12 @@ const transferAmount = BigInt('6900000000000000000000000');
 const transferFee = BigInt('1000000000000000000');
 const wsHydraProvider = 'wss://rpc.hydradx.cloud';
 const wsMoonbeamProvider = 'wss://wss.api.moonbeam.network';
-// XCM Transactor Config
+// XCM Transactor Config. 
 const feeAmount = BigInt('100000000000000');
 const refTime = BigInt('8000000000'); // For XCM Transact
 const proofSize = BigInt('300000'); // For XCM Transact
 // DCA Config
-const dcaPeriod = 144000; // N of blocks between trades (6 seconds)
+const dcaPeriod = 14400; // N of blocks between trades (6 seconds)
 const dcaTotalAmount = BigInt('0'); // With 0, we make a rolling DCA that will end when funds expire
 //const dcaTotalAmount = BigInt('7290000000000000000000000'); // Total amount to trade in the entire DCA
 const dcaMaxRetries = BigInt(9); // Amount of times that the schedule will be retried before it cancels
