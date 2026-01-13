@@ -26,7 +26,9 @@ let dcaOrderType = 'Sell' as 'Buy' | 'Sell'; // Buy an assetOut or Sell an asset
 const dcaAssetIn = 16; // GLMR asset ID
 const dcaAssetOut = [22]; // USDT/USDC asset ID (USDT = 10, USDC = 22)
 const dcaAmount = BigInt('38300000000000000000000'); // Amount of each trade (depends in/out on Buy/Sell)
-const dcaMinTokenPrice = BigInt('1'); // Cents of a dollar - min price of the token to trade in
+const dcaMinTokenPrice = BigInt('1'); // in mills-per-dollar - min price of the token to trade in
+const priceScale = 1000n; // Scale for price calculations (1 dollar = 1000 mills)
+
 
 // Treasury Account Moonbeam
 const treasuryAccount = u8aToHex(
@@ -107,8 +109,6 @@ const createDCACall = async (api, sovereigAccount) => {
     const denominatorProduct = denominators.reduce((acc, factor) => acc * factor, 1n);
     return numeratorProduct / denominatorProduct;
   };
-
-  const priceScale = 100n;
 
   for (let i = 0; i < dcaAssetOut.length; i++) {
     let call;
