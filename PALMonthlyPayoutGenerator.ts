@@ -1,9 +1,11 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 
-// ✅ Fix: "boolean" instead of "bolean"
-const args = yargs.options({
+
+const args = yargs(hideBin(process.argv)).options({
+  // Get input arguments
   price: { type: 'number', demandOption: true, alias: 'p' },
   date: { type: 'string', demandOption: false, alias: 'd' },
   signer: { type: 'string', demandOption: false, default: '' }, // Signer address
@@ -48,6 +50,8 @@ const cliArgs = [
   '',
   '--claim',
   '',
+  '--chopsticks',
+  ''
 ];
 
 // ✅ Conditionally add --chopsticks if present
