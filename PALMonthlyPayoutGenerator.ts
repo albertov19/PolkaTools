@@ -22,7 +22,6 @@ const curatorAddresses = [
   '15BERoWxrWC61cAb4JjpUdM7sy8FAS9uduismDbZ7PURZLto',
   '1brScQ9KDuFB2EsBc93smHY5T464gjWzzvtnJbBwKofTqad',
   '14Pn8sUxdEMgFRDgZ5J2VfcUVMLaMQhst9XuvCj9mKJYUAN2',
-  '1joappPDMib9BfxLXSqVZp2ASL6TR1hcLEkW2nPUHYSeZZ4',
 ];
 
 // Computed values
@@ -31,14 +30,12 @@ const value = Math.round((valueUSD / args['price']) * 10) * 10 ** 9; // Convert 
 const curatorTags = curators.map((curator) => `${curator}-${args['date']}`);
 const scriptPath = path.resolve(__dirname, 'PALTxGenerator.ts');
 
-
-
 // ✅ Dynamically build args array
 const cliArgs = [
   scriptPath,
   '--add',
-  `${value},${value},${value},${value},${value},${value},513089000000000`,
-  `${curatorTags.join(",")},Audit-Moonbeam-SRLabs-2601`,
+  `${value},${value},${value},${value},${value},${value}`,
+  `${curatorTags.join(',')}`,
   '--signer',
   `${args['signer']}`,
   '--childBountiesOffset',
