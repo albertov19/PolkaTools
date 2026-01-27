@@ -4,7 +4,26 @@ A comprehensive set of tools for working with the Polkadot API, Substrate chains
 
 **Use [PNPM](https://pnpm.io/) to avoid dependency conflicts**
 
-**Use at your own risk!**
+⚠️ **Use at your own risk!**
+
+## Table of Contents
+
+- [Getting Started](#getting-started)
+- [Scripts](#scripts)
+  - [Account Management](#account-management)
+  - [Address Calculations](#address-calculations)
+  - [Block and Transaction Analysis](#block-and-transaction-analysis)
+  - [Staking and Governance](#staking-and-governance)
+  - [Contract and Metadata Management](#contract-and-metadata-management)
+  - [Asset Management and Fixes](#asset-management-and-fixes)
+  - [Treasury and DCA Operations](#treasury-and-dca-operations)
+  - [Cross-Chain Operations](#cross-chain-operations)
+  - [Transaction Utilities](#transaction-utilities)
+  - [Security and Verification](#security-and-verification)
+  - [Specialized Generators](#specialized-generators)
+- [Network Support](#network-support)
+- [Data Files](#data-files)
+- [Security Notice](#security-notice)
 
 ## Getting Started
 
@@ -15,6 +34,19 @@ pnpm install
 ```
 
 Then, run scripts with `ts-node` for TypeScript files or `python`/`python3` for Python files.
+
+### Example Usage
+
+```bash
+# Create ECDSA accounts
+ts-node createECDSAAcc.ts --n 5
+
+# Check balance at specific height
+ts-node checkBalanceAtHeight.ts
+
+# Calculate multisig address
+ts-node calculateMultisigAddress.ts --a '["addr1","addr2"]' --t 2
+```
 
 ## Scripts
 
@@ -74,6 +106,10 @@ ts-node getStakingAddress.ts --network moonbeam
 ts-node batchRemoveVotes.ts --n moonbeam --s 0x1234...
 ```
 
+**`batchRefundRefDeposits`** - Batch processes referendum deposit refunds
+
+**`batchTxs`** - Executes multiple transactions in batch format
+
 ### Contract and Metadata Management
 
 **`addContractMetadata`** - Adds contract metadata for multiple contracts using lazy migrations
@@ -89,6 +125,8 @@ ts-node addContractMetadata.ts --c "0x452bE05439d83D3A6A510F11a4Ba1F1909d1cA6d,0
 
 **`calculateMoonbeamHydraDXAssetFix`** - Calculates fixes for Moonbeam HydraDX asset issues
 
+**`calculateMoonbeamRefundPhala`** - Calculates refund operations for Phala transfers on Moonbeam
+
 **`calculateMoonbeamRefundPinkNCTR`** - Calculates refund operations for Pink NCTR tokens on Moonbeam
 
 **`calculateMoonriverXCMDeliveryCalldata`** - Calculates XCM delivery calldata for Moonriver
@@ -103,6 +141,8 @@ ts-node addContractMetadata.ts --c "0x452bE05439d83D3A6A510F11a4Ba1F1909d1cA6d,0
 - Handles XCM message construction for remote execution
 
 **`treasuryRemoveLPHydration`** - Removes liquidity provider positions from Hydration via Treasury operations
+
+**`treasuryTransferUSDCBack`** - Handles USDC transfer operations back to Treasury
 
 ### Cross-Chain Operations
 
@@ -132,7 +172,17 @@ ts-node chopsticks_fakeTx.ts --e ws://127.0.0.1:8000 --s 0x1234...
 
 **`PALMonthlyPayoutGenerator`** - Generates monthly payout transactions for Polkadot Assurance Legion
 
-**`VLTxGenerator`** - Specialized transaction generator for VL operations
+## Requirements
+
+- **Node.js** (v16 or higher recommended)
+- **PNPM** package manager
+- **TypeScript** for running `.ts` files
+- **Python 3** for running `.py` files
+
+Install TypeScript globally if needed:
+```bash
+npm install -g typescript ts-node
+```
 
 ## Network Support
 
@@ -145,12 +195,50 @@ Most scripts support the following networks:
 
 - `accounts.json` - Stores generated account information
 - `addresses.json` - Contains address data for various operations
-- `misc/` - Directory containing asset data and configuration files
+- `misc/` - Directory containing asset data and configuration files:
+  - `AHAssets.json` - Asset Hub assets
+  - `HydraDXAsset.json` - HydraDX asset configurations
+  - `KusamaAssets.json` - Kusama network assets
+  - `ParachainKusamaAssets.json` - Parachain-specific Kusama assets
+
+## Configuration
+
+Key configuration files:
+- `package.json` - Node.js dependencies and scripts
+- `tsconfig.json` - TypeScript compiler configuration
+- `requirements.txt` - Python dependencies
+- `.gitignore` - Git ignore rules
 
 ## Security Notice
 
-⚠️ **Important**: These tools handle private keys and perform on-chain operations. Always:
-- Test on testnets first
-- Never share private keys
-- Review all transactions before signing
-- Use at your own risk in production environments
+⚠️ **CRITICAL SECURITY WARNINGS**
+
+These tools handle private keys and perform on-chain operations. Always follow these security practices:
+
+- ✅ **Test on testnets first** before using on mainnet
+- ✅ **Never share private keys** or commit them to version control
+- ✅ **Review all transactions** carefully before signing
+- ✅ **Use hardware wallets** for production environments when possible
+- ✅ **Keep dependencies updated** to patch security vulnerabilities
+- ⚠️ **Use at your own risk** - no warranties provided
+
+**Scripts that handle sensitive data:**
+- `getAccFromJSON.ts` - Exposes private keys (DO NOT SHARE OUTPUT)
+- `sendSubstrateTx.ts` - Requires mnemonic input (NOT SAFE FOR PRODUCTION)
+- `createECDSAAcc.ts` & `createSR25519Acc.ts` - Generate and store private keys
+
+## Contributing
+
+Contributions are welcome! Please ensure:
+1. Code follows existing patterns and style
+2. Add documentation for new scripts in this README
+3. Test thoroughly on testnets before submitting
+4. Include usage examples for complex operations
+
+## License
+
+Use at your own risk. No warranties provided.
+
+---
+
+**Last Updated:** January 2026

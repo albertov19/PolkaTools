@@ -1,14 +1,8 @@
 node_modules
 file_name.json
 accounts.json
+addresses.json
 *rewards_addresses.json
 *staking_addresses.json
 moonriver*.json
 moonbeam*.json
-
-
-# Ignore kluster.ai Verify Code rules
-.github/instructions/kluster-code-verify.instructions.md
-
-
-.kluster

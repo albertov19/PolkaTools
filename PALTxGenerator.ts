@@ -212,15 +212,11 @@ const main = async () => {
 
   console.log(`Tx for Chopsticks Test ${batchTx.toHex()}\n`);
 
-  console.log(`Tx for Multix Submission ${batchTx.method.toHex()}\n`);
-
-    console.log(`Tx hash ${blake2AsHex(batchTx.method.toHex())}\n`);
-
-
   // Proxy call
   let proxyTx = await api.tx.proxy.proxy(palCurator, null, batchTx);
 
   console.log(`Proxy Tx ${proxyTx.method.toHex()}`);
+  console.log(`Proxy Tx hash ${blake2AsHex(proxyTx.method.toHex())}\n`);
 
   // Multisig Call
   let multisigTx = await api.tx.multisig.asMulti(
