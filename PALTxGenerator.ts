@@ -4,9 +4,10 @@ import { u8aToHex } from '@polkadot/util';
 import { signFakeWithApi } from '@acala-network/chopsticks-utils';
 
 import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 
+const args = yargs(hideBin(process.argv)).options({
 // Get input arguments
-const args = yargs.options({
   childBounties: { type: 'array', demandOption: false }, // [Child-Bounty-IDs]
   childBountiesOffset: { type: 'number', demandOption: false, default: 0 }, // Offset for child bounties
   beneficiaries: { type: 'array', demandOption: false }, // [Beneficiary-Addresses]

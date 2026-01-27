@@ -64,6 +64,9 @@ const main = async () => {
         batchTxs.push(
           await api.tx.convictionVoting.removeOtherVote(argv['sender'], classInfo, indexInfo)
         );
+        batchTxs.push(
+          await api.tx.convictionVoting.unlock( classInfo, argv['sender'])
+        );
       }
     }
   }
