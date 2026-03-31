@@ -14,18 +14,17 @@ const args = yargs(hideBin(process.argv)).options({
 }).argv as any;
 
 // Data setup
-const curators = ['Taylor', 'Alberto', 'Bryan', 'cl0w', 'Pierre', 'Vince'];
+const curators = ['Taylor', 'Alberto', 'Bryan', 'cl0w', 'Vince'];
 const curatorAddresses = [
   '15aSnCUARuwBoLYn6nkFj5ap2DUfRmKcXJaAotfVwvVQxNK3',
   '16AhqStFQa8GrffE7WapHrUQ29dmioZHuwFTn4z9fQ7WBGBZ',
   '14DsLzVyTUTDMm2eP3czwPbH53KgqnQRp3CJJZS9GR7yxGDP',
   '15BERoWxrWC61cAb4JjpUdM7sy8FAS9uduismDbZ7PURZLto',
-  '1brScQ9KDuFB2EsBc93smHY5T464gjWzzvtnJbBwKofTqad',
   '14Pn8sUxdEMgFRDgZ5J2VfcUVMLaMQhst9XuvCj9mKJYUAN2',
 ];
 
 // Computed values
-const valueUSD = 3000;
+const valueUSD = 1500;
 const value = Math.round((valueUSD / args['price']) * 10) * 10 ** 9; // Convert to Planck
 const curatorTags = curators.map((curator) => `${curator}-${args['date']}`);
 const scriptPath = path.resolve(__dirname, 'PALTxGenerator.ts');
