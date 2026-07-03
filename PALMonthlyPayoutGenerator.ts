@@ -33,7 +33,7 @@ const scriptPath = path.resolve(__dirname, 'PALTxGenerator.ts');
 const cliArgs = [
   scriptPath,
   '--add',
-  `${value},${value},${value},${value},${value},${value}`,
+  curators.map(() => value).join(','),
   `${curatorTags.join(',')}`,
   '--signer',
   `${args['signer']}`,
